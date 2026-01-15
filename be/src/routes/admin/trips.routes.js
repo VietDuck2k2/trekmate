@@ -18,8 +18,8 @@ router.get('/', adminMiddleware, async (req, res) => {
       if (status) filter.status = status;
 
       const trips = await Trip.find(filter)
-         .populate('createdBy', 'displayName email role status')
-         .populate('members', 'displayName email')
+         .populate('createdBy', 'displayName email role status avatarUrl')
+         .populate('members', 'displayName email avatarUrl')
          .sort({ createdAt: -1 })
          .skip(skip)
          .limit(parseInt(limit));
@@ -52,8 +52,8 @@ router.get('/', adminMiddleware, async (req, res) => {
 router.get('/:id', adminMiddleware, async (req, res) => {
    try {
       const trip = await Trip.findById(req.params.id)
-         .populate('createdBy', 'displayName email role status bio location')
-         .populate('members', 'displayName email role');
+         .populate('createdBy', 'displayName email role status bio location avatarUrl')
+         .populate('members', 'displayName email role avatarUrl');
 
       if (!trip) {
          return res.status(404).json({

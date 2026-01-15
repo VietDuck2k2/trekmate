@@ -52,6 +52,11 @@ const userSchema = new mongoose.Schema({
    location: {
       type: String
    },
+   experienceLevel: {
+      type: String,
+      enum: ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'],
+      default: 'BEGINNER'
+   },
    status: {
       type: String,
       enum: ['ACTIVE', 'BLOCKED'],

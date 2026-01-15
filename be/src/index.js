@@ -20,6 +20,9 @@ app.use('/api/auth', require('./routes/auth.routes'));
 // Trip routes
 app.use('/api/trips', require('./routes/trip.routes'));
 
+// Profile routes
+app.use('/api/me', require('./routes/profile.routes'));
+
 // Ad routes
 app.use('/api/ads', require('./routes/ad.routes'));
 
