@@ -14,7 +14,8 @@ const notificationSchema = new mongoose.Schema({
       enum: [
          'JOIN_REQUEST_RECEIVED',
          'JOIN_REQUEST_APPROVED', 
-         'JOIN_REQUEST_REJECTED'
+         'JOIN_REQUEST_REJECTED',
+         'MEMBER_JOINED'
       ],
       required: true
    },

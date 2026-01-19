@@ -430,6 +430,9 @@ router.post('/:id/approve-request/:requestUserId', authMiddleware, async (req, r
          });
       }
 
+      // Store existing member IDs before adding the new member
+      const existingMemberIds = [...trip.members];
+      
       // Add user to members and remove the request
       trip.members.push(requestUserId);
       const approvedRequest = trip.joinRequests[requestIndex];
@@ -437,9 +440,14 @@ router.post('/:id/approve-request/:requestUserId', authMiddleware, async (req, r
 
       await trip.save();
 
+      // Populate the newly added member to get their details
+      const newMember = await require('../models/user.model').findById(requestUserId).select('displayName');
+
       // Create approval notification for the requester
-      const requester = { _id: requestUserId };
-      await NotificationService.createJoinRequestApprovedNotification(trip, requester, req.user);
+      await NotificationService.createJoinRequestApprovedNotification(trip, { _id: requestUserId }, req.user);
+
+      // Create member joined notifications for all existing members
+      await NotificationService.createMemberJoinedNotifications(trip, newMember, existingMemberIds);
 
       await trip.populate(['members', 'joinRequests.user'], 'displayName avatarUrl');
 

@@ -88,6 +88,36 @@ class NotificationService {
          console.error('Error creating join request rejected notification:', error);
       }
    }
+
+   /**
+    * Create notifications when a new member joins a trip
+    * @param {Object} trip - Trip document
+    * @param {Object} newMember - User who just joined
+    * @param {Array} existingMemberIds - Array of existing member IDs (excluding new member)
+    */
+   static async createMemberJoinedNotifications(trip, newMember, existingMemberIds) {
+      try {
+         const notifications = [];
+
+         // Create notification for all existing members (organizer + other members)
+         for (const memberId of existingMemberIds) {
+            notifications.push({
+               user: memberId,
+               type: 'MEMBER_JOINED',
+               trip: trip._id,
+               fromUser: newMember._id,
+               message: `${newMember.displayName} has joined your trip "${trip.title}"`
+            });
+         }
+
+         if (notifications.length > 0) {
+            await Notification.insertMany(notifications);
+            console.log(`Created ${notifications.length} member joined notifications`);
+         }
+      } catch (error) {
+         console.error('Error creating member joined notifications:', error);
+      }
+   }
 }
 
 module.exports = NotificationService;
