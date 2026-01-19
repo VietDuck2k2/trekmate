@@ -39,6 +39,21 @@ const tripSchema = new mongoose.Schema({
    costPerPerson: {
       type: Number
    },
+   coverImageUrl: {
+      type: String,
+      validate: {
+         validator: function(v) {
+            if (!v) return true; // Optional field
+            try {
+               new URL(v);
+               return true;
+            } catch {
+               return false;
+            }
+         },
+         message: 'Cover image must be a valid URL'
+      }
+   },
    createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',

@@ -204,6 +204,93 @@ router.get('/:id', optionalAuthMiddleware, async (req, res) => {
 });
 
 /**
+ * PUT /api/trips/:id
+ * Update a trip (requires authentication - only trip organizer)
+ */
+router.put('/:id', authMiddleware, async (req, res) => {
+   try {
+      const {
+         title,
+         description,
+         location,
+         startDate,
+         endDate,
+         difficulty,
+         maxMembers,
+         meetingPoint,
+         requirements,
+         costPerPerson,
+         coverImageUrl
+      } = req.body;
+
+      const trip = await Trip.findById(req.params.id);
+
+      if (!trip) {
+         return res.status(404).json({
+            success: false,
+            message: 'Trip not found'
+         });
+      }
+
+      // Check if current user is the trip organizer
+      if (trip.createdBy.toString() !== req.user._id.toString()) {
+         return res.status(403).json({
+            success: false,
+            message: 'Only the trip organizer can update this trip'
+         });
+      }
+
+      // Validate required fields
+      if (!title || !location || !startDate) {
+         return res.status(400).json({
+            success: false,
+            message: 'Title, location, and start date are required'
+         });
+      }
+
+      // Validate start date is in future for new trips or if being changed
+      if (new Date(startDate) <= new Date() && startDate !== trip.startDate.toISOString()) {
+         return res.status(400).json({
+            success: false,
+            message: 'Start date must be in the future'
+         });
+      }
+
+      // Update trip fields
+      trip.title = title;
+      trip.description = description;
+      trip.location = location;
+      trip.startDate = startDate;
+      trip.endDate = endDate;
+      trip.difficulty = difficulty;
+      trip.maxMembers = maxMembers || trip.maxMembers;
+      trip.meetingPoint = meetingPoint || trip.meetingPoint;
+      trip.requirements = requirements || trip.requirements;
+      trip.costPerPerson = costPerPerson || trip.costPerPerson;
+      if (coverImageUrl !== undefined) {
+         trip.coverImageUrl = coverImageUrl;
+      }
+
+      await trip.save();
+
+      await trip.populate('createdBy', 'displayName avatarUrl');
+      await trip.populate('members', 'displayName avatarUrl');
+
+      res.json({
+         success: true,
+         message: 'Trip updated successfully',
+         trip
+      });
+   } catch (error) {
+      console.error('Update trip error:', error);
+      res.status(500).json({
+         success: false,
+         message: 'Error updating trip'
+      });
+   }
+});
+
+/**
  * POST /api/trips
  * Create a new trip (requires authentication)
  */
@@ -219,7 +306,8 @@ router.post('/', authMiddleware, async (req, res) => {
          maxMembers,
          meetingPoint,
          requirements,
-         costPerPerson
+         costPerPerson,
+         coverImageUrl
       } = req.body;
 
       console.log('Creating trip with data:', req.body);
@@ -266,6 +354,7 @@ router.post('/', authMiddleware, async (req, res) => {
       if (meetingPoint) tripData.meetingPoint = meetingPoint;
       if (requirements) tripData.requirements = requirements;
       if (costPerPerson) tripData.costPerPerson = costPerPerson;
+      if (coverImageUrl) tripData.coverImageUrl = coverImageUrl;
 
       const trip = new Trip(tripData);
       await trip.save();
