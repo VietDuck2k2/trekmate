@@ -150,6 +150,43 @@ router.patch('/:id/hide', adminMiddleware, async (req, res) => {
 });
 
 /**
+ * PATCH /api/admin/ads/:id/unhide
+ * Unhide an ad (set status to ACTIVE)
+ */
+router.patch('/:id/unhide', adminMiddleware, async (req, res) => {
+   try {
+      const ad = await Ad.findById(req.params.id);
+
+      if (!ad) {
+         return res.status(404).json({
+            success: false,
+            message: 'Ad not found'
+         });
+      }
+
+      ad.status = 'ACTIVE';
+      await ad.save();
+
+      res.json({
+         success: true,
+         message: 'Ad unhidden successfully',
+         ad: {
+            _id: ad._id,
+            title: ad.title,
+            status: ad.status,
+            brandId: ad.brandId
+         }
+      });
+   } catch (error) {
+      console.error('Admin unhide ad error:', error);
+      res.status(500).json({
+         success: false,
+         message: 'Error unhiding ad'
+      });
+   }
+});
+
+/**
  * PATCH /api/admin/ads/:id/reject
  * Reject an ad (set status to INACTIVE)
  */
