@@ -26,6 +26,9 @@ app.use('/api/trips', require('./routes/review.routes'));
 // Profile routes
 app.use('/api/me', require('./routes/profile.routes'));
 
+// Notification routes
+app.use('/api/notifications', require('./routes/notification.routes'));
+
 // Ad routes
 app.use('/api/ads', require('./routes/ad.routes'));
 

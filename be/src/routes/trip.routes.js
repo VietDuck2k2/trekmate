@@ -1,6 +1,7 @@
 const express = require('express');
 const Trip = require('../models/trip.model');
 const { authMiddleware, optionalAuthMiddleware } = require('../middleware/auth.middleware');
+const NotificationService = require('../services/notificationService');
 
 const router = express.Router();
 
@@ -358,6 +359,9 @@ router.post('/:id/request-join', authMiddleware, async (req, res) => {
 
       await trip.save();
 
+      // Create notifications for organizer and members
+      await NotificationService.createJoinRequestNotifications(trip, req.user);
+
       res.json({
          success: true,
          message: 'Join request submitted successfully. Waiting for organizer approval.'
@@ -428,9 +432,15 @@ router.post('/:id/approve-request/:requestUserId', authMiddleware, async (req, r
 
       // Add user to members and remove the request
       trip.members.push(requestUserId);
+      const approvedRequest = trip.joinRequests[requestIndex];
       trip.joinRequests.splice(requestIndex, 1);
 
       await trip.save();
+
+      // Create approval notification for the requester
+      const requester = { _id: requestUserId };
+      await NotificationService.createJoinRequestApprovedNotification(trip, requester, req.user);
+
       await trip.populate(['members', 'joinRequests.user'], 'displayName avatarUrl');
 
       res.json({
@@ -484,8 +494,15 @@ router.post('/:id/reject-request/:requestUserId', authMiddleware, async (req, re
       }
 
       // Remove the request
+      const rejectedRequest = trip.joinRequests[requestIndex];
       trip.joinRequests.splice(requestIndex, 1);
+      
       await trip.save();
+
+      // Create rejection notification for the requester
+      const requester = { _id: requestUserId };
+      await NotificationService.createJoinRequestRejectedNotification(trip, requester, req.user);
+
       await trip.populate(['members', 'joinRequests.user'], 'displayName avatarUrl');
 
       res.json({

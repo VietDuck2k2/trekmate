@@ -123,8 +123,8 @@ router.get('/notifications', authMiddleware, async (req, res) => {
          createdBy: userId,
          'joinRequests.status': 'PENDING'
       })
-      .populate('joinRequests.user', 'displayName avatarUrl')
-      .select('_id title joinRequests');
+         .populate('joinRequests.user', 'displayName avatarUrl')
+         .select('_id title joinRequests');
 
       const organizerNotifications = [];
       organizerTrips.forEach(trip => {
@@ -148,8 +148,8 @@ router.get('/notifications', authMiddleware, async (req, res) => {
       const myRequestTrips = await Trip.find({
          'joinRequests.user': userId
       })
-      .populate('createdBy', 'displayName')
-      .select('_id title createdBy joinRequests');
+         .populate('createdBy', 'displayName')
+         .select('_id title createdBy joinRequests');
 
       const myRequestNotifications = [];
       myRequestTrips.forEach(trip => {
