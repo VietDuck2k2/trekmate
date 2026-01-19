@@ -23,12 +23,12 @@ router.get('/profile', authMiddleware, async (req, res) => {
       }
 
       // Get trip stats
-      const totalCreatedTrips = await Trip.countDocuments({ 
-         createdBy: userId 
+      const totalCreatedTrips = await Trip.countDocuments({
+         createdBy: userId
       });
-      
-      const totalJoinedTrips = await Trip.countDocuments({ 
-         members: userId 
+
+      const totalJoinedTrips = await Trip.countDocuments({
+         members: userId
       });
 
       res.json({
