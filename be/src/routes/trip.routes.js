@@ -179,7 +179,8 @@ router.get('/:id', optionalAuthMiddleware, async (req, res) => {
    try {
       const trip = await Trip.findById(req.params.id)
          .populate('createdBy', 'displayName avatarUrl bio location')
-         .populate('members', 'displayName avatarUrl');
+         .populate('members', 'displayName avatarUrl')
+         .populate('joinRequests.user', 'displayName avatarUrl');
 
       if (!trip) {
          return res.status(404).json({
@@ -289,11 +290,12 @@ router.post('/', authMiddleware, async (req, res) => {
 });
 
 /**
- * POST /api/trips/:id/join
- * Join a trip (requires authentication)
+ * POST /api/trips/:id/request-join
+ * Request to join a trip (requires authentication)
  */
-router.post('/:id/join', authMiddleware, async (req, res) => {
+router.post('/:id/request-join', authMiddleware, async (req, res) => {
    try {
+      const { message } = req.body;
       const trip = await Trip.findById(req.params.id);
 
       if (!trip) {
@@ -319,38 +321,183 @@ router.post('/:id/join', authMiddleware, async (req, res) => {
          });
       }
 
-      // Check if user already joined
+      // Check if user is already a member
       if (trip.members.includes(req.user._id)) {
          return res.status(400).json({
             success: false,
-            message: 'You have already joined this trip'
+            message: 'You are already a member of this trip'
          });
       }
 
-      // Check if trip is full
-      if (trip.members.length >= trip.maxMembers) {
+      // Check if user already has a pending request
+      const existingRequest = trip.joinRequests.find(
+         request => request.user.toString() === req.user._id.toString() && request.status === 'PENDING'
+      );
+      
+      if (existingRequest) {
+         return res.status(400).json({
+            success: false,
+            message: 'You already have a pending join request for this trip'
+         });
+      }
+
+      // Check if trip would be full (including pending requests)
+      if (trip.maxMembers && trip.members.length >= trip.maxMembers) {
          return res.status(400).json({
             success: false,
             message: 'Trip is full'
          });
       }
 
-      // Add user to members
-      trip.members.push(req.user._id);
-      await trip.save();
+      // Create join request
+      trip.joinRequests.push({
+         user: req.user._id,
+         message: message?.trim(),
+         status: 'PENDING'
+      });
 
-      await trip.populate('members', 'displayName avatarUrl');
+      await trip.save();
 
       res.json({
          success: true,
-         message: 'Successfully joined the trip',
+         message: 'Join request submitted successfully. Waiting for organizer approval.'
+      });
+   } catch (error) {
+      console.error('Request join trip error:', error);
+      res.status(500).json({
+         success: false,
+         message: 'Error submitting join request'
+      });
+   }
+});
+
+/**
+ * POST /api/trips/:id/approve-request/:requestUserId
+ * Approve a join request (requires authentication - only trip organizer)
+ */
+router.post('/:id/approve-request/:requestUserId', authMiddleware, async (req, res) => {
+   try {
+      const trip = await Trip.findById(req.params.id);
+      const { requestUserId } = req.params;
+
+      if (!trip) {
+         return res.status(404).json({
+            success: false,
+            message: 'Trip not found'
+         });
+      }
+
+      // Check if current user is the trip organizer
+      if (trip.createdBy.toString() !== req.user._id.toString()) {
+         return res.status(403).json({
+            success: false,
+            message: 'Only the trip organizer can approve join requests'
+         });
+      }
+
+      // Find the join request
+      const requestIndex = trip.joinRequests.findIndex(
+         request => request.user.toString() === requestUserId && request.status === 'PENDING'
+      );
+
+      if (requestIndex === -1) {
+         return res.status(404).json({
+            success: false,
+            message: 'Join request not found or already processed'
+         });
+      }
+
+      // Check if trip is full
+      if (trip.maxMembers && trip.members.length >= trip.maxMembers) {
+         return res.status(400).json({
+            success: false,
+            message: 'Cannot approve request - trip is full'
+         });
+      }
+
+      // Check if user is already a member (edge case)
+      if (trip.members.includes(requestUserId)) {
+         // Remove the request and return success
+         trip.joinRequests.splice(requestIndex, 1);
+         await trip.save();
+         return res.json({
+            success: true,
+            message: 'User is already a member of this trip'
+         });
+      }
+
+      // Add user to members and remove the request
+      trip.members.push(requestUserId);
+      trip.joinRequests.splice(requestIndex, 1);
+      
+      await trip.save();
+      await trip.populate(['members', 'joinRequests.user'], 'displayName avatarUrl');
+
+      res.json({
+         success: true,
+         message: 'Join request approved successfully',
          trip
       });
    } catch (error) {
-      console.error('Join trip error:', error);
+      console.error('Approve join request error:', error);
       res.status(500).json({
          success: false,
-         message: 'Error joining trip'
+         message: 'Error approving join request'
+      });
+   }
+});
+
+/**
+ * POST /api/trips/:id/reject-request/:requestUserId
+ * Reject a join request (requires authentication - only trip organizer)
+ */
+router.post('/:id/reject-request/:requestUserId', authMiddleware, async (req, res) => {
+   try {
+      const trip = await Trip.findById(req.params.id);
+      const { requestUserId } = req.params;
+
+      if (!trip) {
+         return res.status(404).json({
+            success: false,
+            message: 'Trip not found'
+         });
+      }
+
+      // Check if current user is the trip organizer
+      if (trip.createdBy.toString() !== req.user._id.toString()) {
+         return res.status(403).json({
+            success: false,
+            message: 'Only the trip organizer can reject join requests'
+         });
+      }
+
+      // Find and remove the join request
+      const requestIndex = trip.joinRequests.findIndex(
+         request => request.user.toString() === requestUserId && request.status === 'PENDING'
+      );
+
+      if (requestIndex === -1) {
+         return res.status(404).json({
+            success: false,
+            message: 'Join request not found or already processed'
+         });
+      }
+
+      // Remove the request
+      trip.joinRequests.splice(requestIndex, 1);
+      await trip.save();
+      await trip.populate(['members', 'joinRequests.user'], 'displayName avatarUrl');
+
+      res.json({
+         success: true,
+         message: 'Join request rejected',
+         trip
+      });
+   } catch (error) {
+      console.error('Reject join request error:', error);
+      res.status(500).json({
+         success: false,
+         message: 'Error rejecting join request'
       });
    }
 });
