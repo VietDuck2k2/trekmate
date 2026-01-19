@@ -333,7 +333,7 @@ router.post('/:id/request-join', authMiddleware, async (req, res) => {
       const existingRequest = trip.joinRequests.find(
          request => request.user.toString() === req.user._id.toString() && request.status === 'PENDING'
       );
-      
+
       if (existingRequest) {
          return res.status(400).json({
             success: false,
@@ -429,7 +429,7 @@ router.post('/:id/approve-request/:requestUserId', authMiddleware, async (req, r
       // Add user to members and remove the request
       trip.members.push(requestUserId);
       trip.joinRequests.splice(requestIndex, 1);
-      
+
       await trip.save();
       await trip.populate(['members', 'joinRequests.user'], 'displayName avatarUrl');
 

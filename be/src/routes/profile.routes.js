@@ -110,4 +110,77 @@ router.put('/profile', authMiddleware, async (req, res) => {
    }
 });
 
+/**
+ * GET /api/me/notifications
+ * Get join request notifications for current user
+ */
+router.get('/notifications', authMiddleware, async (req, res) => {
+   try {
+      const userId = req.user._id;
+
+      // Get organizer notifications - trips where user is organizer with pending join requests
+      const organizerTrips = await Trip.find({
+         createdBy: userId,
+         'joinRequests.status': 'PENDING'
+      })
+      .populate('joinRequests.user', 'displayName avatarUrl')
+      .select('_id title joinRequests');
+
+      const organizerNotifications = [];
+      organizerTrips.forEach(trip => {
+         const pendingRequests = trip.joinRequests.filter(req => req.status === 'PENDING');
+         pendingRequests.forEach(request => {
+            organizerNotifications.push({
+               tripId: trip._id,
+               tripTitle: trip.title,
+               requester: {
+                  id: request.user._id,
+                  name: request.user.displayName,
+                  avatar: request.user.avatarUrl
+               },
+               createdAt: request.createdAt,
+               message: request.message
+            });
+         });
+      });
+
+      // Get my request status notifications - join requests made by current user
+      const myRequestTrips = await Trip.find({
+         'joinRequests.user': userId
+      })
+      .populate('createdBy', 'displayName')
+      .select('_id title createdBy joinRequests');
+
+      const myRequestNotifications = [];
+      myRequestTrips.forEach(trip => {
+         const myRequest = trip.joinRequests.find(req => req.user.toString() === userId.toString());
+         if (myRequest) {
+            myRequestNotifications.push({
+               tripId: trip._id,
+               tripTitle: trip.title,
+               organizerName: trip.createdBy.displayName,
+               status: myRequest.status,
+               createdAt: myRequest.createdAt,
+               updatedAt: myRequest.updatedAt || myRequest.createdAt
+            });
+         }
+      });
+
+      res.json({
+         success: true,
+         notifications: {
+            organizer: organizerNotifications,
+            myRequests: myRequestNotifications,
+            totalCount: organizerNotifications.length + myRequestNotifications.filter(req => req.status !== 'PENDING').length
+         }
+      });
+   } catch (error) {
+      console.error('Get notifications error:', error);
+      res.status(500).json({
+         success: false,
+         message: 'Error fetching notifications'
+      });
+   }
+});
+
 module.exports = router;
