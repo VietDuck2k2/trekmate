@@ -220,7 +220,8 @@ router.put('/:id', authMiddleware, async (req, res) => {
          meetingPoint,
          requirements,
          costPerPerson,
-         coverImageUrl
+         coverImageUrl,
+         photos
       } = req.body;
 
       const trip = await Trip.findById(req.params.id);
@@ -270,6 +271,10 @@ router.put('/:id', authMiddleware, async (req, res) => {
       if (coverImageUrl !== undefined) {
          trip.coverImageUrl = coverImageUrl;
       }
+      if (photos !== undefined && Array.isArray(photos)) {
+         // Filter out empty or whitespace-only URLs
+         trip.photos = photos.filter(url => url && url.trim().length > 0);
+      }
 
       await trip.save();
 
@@ -307,7 +312,8 @@ router.post('/', authMiddleware, async (req, res) => {
          meetingPoint,
          requirements,
          costPerPerson,
-         coverImageUrl
+         coverImageUrl,
+         photos
       } = req.body;
 
       console.log('Creating trip with data:', req.body);
@@ -355,6 +361,10 @@ router.post('/', authMiddleware, async (req, res) => {
       if (requirements) tripData.requirements = requirements;
       if (costPerPerson) tripData.costPerPerson = costPerPerson;
       if (coverImageUrl) tripData.coverImageUrl = coverImageUrl;
+      if (photos && Array.isArray(photos)) {
+         // Filter out empty or whitespace-only URLs
+         tripData.photos = photos.filter(url => url && url.trim().length > 0);
+      }
 
       const trip = new Trip(tripData);
       await trip.save();

@@ -54,6 +54,21 @@ const tripSchema = new mongoose.Schema({
          message: 'Cover image must be a valid URL'
       }
    },
+   photos: [{
+      type: String,
+      validate: {
+         validator: function(v) {
+            if (!v) return true;
+            try {
+               new URL(v);
+               return true;
+            } catch {
+               return false;
+            }
+         },
+         message: 'Photo URL must be a valid URL'
+      }
+   }],
    createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
