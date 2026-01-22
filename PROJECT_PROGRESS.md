@@ -81,7 +81,7 @@
 - **Comprehensive API Endpoints**: Full CRUD operations for notifications
 - **Join Request Notifications**: Multi-user notification system for join events
 - **Member Joined Alerts**: All existing members notified when new member joins trip
-- **Enhanced Dropdown Interface**: 
+- **Enhanced Dropdown Interface**:
   - Color-coded type badges (Join Request, Request Approved, etc.)
   - Improved time formatting (Just now → 5m ago → Yesterday → 2 weeks ago)
   - Shows top 5 recent notifications
