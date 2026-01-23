@@ -10,11 +10,25 @@ const router = express.Router();
  */
 router.get('/', optionalAuthMiddleware, async (req, res) => {
    try {
-      const { page = 1, limit = 10 } = req.query;
+      const { page = 1, limit = 10, search = '', category = '' } = req.query;
       const skip = (page - 1) * limit;
 
       // Only show active ads to public
       const filter = { status: 'ACTIVE' };
+
+      // Add category filter if provided
+      if (category && ['STAY', 'EAT', 'PLAY', 'OTHER'].includes(category)) {
+         filter.category = category;
+      }
+
+      // Add search filter if search term is provided
+      if (search) {
+         const searchRegex = new RegExp(search, 'i');
+         filter.$or = [
+            { title: searchRegex },
+            { description: searchRegex }
+         ];
+      }
 
       const ads = await Ad.find(filter)
          .populate('brandId', 'displayName brandInfo.brandName brandInfo.logoUrl brandInfo.website')
@@ -94,7 +108,7 @@ router.post('/', authMiddleware, async (req, res) => {
          });
       }
 
-      const { title, description, imageUrl, linkUrl } = req.body;
+      const { title, description, imageUrl, linkUrl, category } = req.body;
 
       // Validate required fields
       if (!title) {
@@ -110,6 +124,7 @@ router.post('/', authMiddleware, async (req, res) => {
          description,
          imageUrl,
          linkUrl,
+         category: category || 'OTHER',
          brandId: req.user._id
       });
 
@@ -155,13 +170,16 @@ router.put('/:id', authMiddleware, async (req, res) => {
          });
       }
 
-      const { title, description, imageUrl, linkUrl, status } = req.body;
+      const { title, description, imageUrl, linkUrl, status, category } = req.body;
 
       // Update fields
       if (title !== undefined) ad.title = title;
       if (description !== undefined) ad.description = description;
       if (imageUrl !== undefined) ad.imageUrl = imageUrl;
       if (linkUrl !== undefined) ad.linkUrl = linkUrl;
+      if (category !== undefined && ['STAY', 'EAT', 'PLAY', 'OTHER'].includes(category)) {
+         ad.category = category;
+      }
 
       // Only admin can change status
       if (status !== undefined) {

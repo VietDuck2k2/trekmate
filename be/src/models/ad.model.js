@@ -26,6 +26,11 @@ const adSchema = new mongoose.Schema({
       type: String,
       enum: ['ACTIVE', 'INACTIVE', 'PENDING', 'HIDDEN'],
       default: 'PENDING'
+   },
+   category: {
+      type: String,
+      enum: ['STAY', 'EAT', 'PLAY', 'OTHER'],
+      default: 'OTHER'
    }
 }, {
    timestamps: true

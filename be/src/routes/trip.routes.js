@@ -173,6 +173,46 @@ router.get('/my/created', authMiddleware, async (req, res) => {
 });
 
 /**
+ * GET /api/trips/:id/review-eligibility
+ * Check if a trip is eligible for review by the current user
+ */
+router.get('/:id/review-eligibility', optionalAuthMiddleware, async (req, res) => {
+   try {
+      const trip = await Trip.findById(req.params.id);
+
+      if (!trip) {
+         return res.status(404).json({
+            success: false,
+            message: 'Trip not found'
+         });
+      }
+
+      const now = new Date();
+      const isPast = trip.endDate && trip.endDate < now;
+
+      // Determine eligibility
+      // Note: Current logic in review.routes requires user to be a member
+      const isMember = req.user && (trip.members.includes(req.user._id) || trip.createdBy.equals(req.user._id));
+
+      res.json({
+         success: true,
+         isReviewable: isPast && isMember,
+         reason: !isPast ? 'Trip has not ended yet' : (!isMember ? 'User is not a member of this trip' : null),
+         trip: {
+            title: trip.title,
+            endDate: trip.endDate
+         }
+      });
+   } catch (error) {
+      console.error('Check review eligibility error:', error);
+      res.status(500).json({
+         success: false,
+         message: 'Error checking review eligibility'
+      });
+   }
+});
+
+/**
  * GET /api/trips/:id
  * Get trip details (public endpoint)
  */
@@ -531,7 +571,7 @@ router.post('/:id/approve-request/:requestUserId', authMiddleware, async (req, r
 
       // Store existing member IDs before adding the new member
       const existingMemberIds = [...trip.members];
-      
+
       // Add user to members and remove the request
       trip.members.push(requestUserId);
       const approvedRequest = trip.joinRequests[requestIndex];
@@ -603,7 +643,7 @@ router.post('/:id/reject-request/:requestUserId', authMiddleware, async (req, re
       // Remove the request
       const rejectedRequest = trip.joinRequests[requestIndex];
       trip.joinRequests.splice(requestIndex, 1);
-      
+
       await trip.save();
 
       // Create rejection notification for the requester
