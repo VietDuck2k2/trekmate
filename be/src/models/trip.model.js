@@ -33,6 +33,14 @@ const tripSchema = new mongoose.Schema({
    meetingPoint: {
       type: String
    },
+   locationCoords: {
+      lat: { type: Number },
+      lng: { type: Number }
+   },
+   meetingPointCoords: {
+      lat: { type: Number },
+      lng: { type: Number }
+   },
    requirements: {
       type: String
    },
@@ -42,7 +50,7 @@ const tripSchema = new mongoose.Schema({
    coverImageUrl: {
       type: String,
       validate: {
-         validator: function(v) {
+         validator: function (v) {
             if (!v) return true; // Optional field
             try {
                new URL(v);
@@ -57,7 +65,7 @@ const tripSchema = new mongoose.Schema({
    photos: [{
       type: String,
       validate: {
-         validator: function(v) {
+         validator: function (v) {
             if (!v) return true;
             try {
                new URL(v);
