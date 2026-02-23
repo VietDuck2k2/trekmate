@@ -1,0 +1,519 @@
+# TrekMate Deployment Plan - AWS EC2 Ubuntu Single Instance
+
+## Repo Analysis
+
+### 1. Project Structure
+
+**Backend:** `be/`
+- **Entry file:** `be/src/index.js`
+- **HTTP Server:** Created via Express `app.listen()` on line 45
+- **Default port:** `process.env.PORT || 5000` (configurable via environment variable)
+
+**Frontend:** `fe/`
+- **Entry file:** `fe/src/index.js` (React 19 with `createRoot`)
+- **Main component:** `fe/src/App.js`
+- **Build tool:** Create React App (CRA)
+
+### 2. Backend Details
+
+**Server Configuration:**
+- HTTP server listens on port configured via `process.env.PORT` (default 5000)
+- Located in `be/src/index.js` lines 40-48
+
+**Environment Variables Used:**
+- `MONGODB_URI` - MongoDB connection string (line 8 in `be/src/config/database.js`)
+- `JWT_SECRET` - JWT signing key (line 3 in `be/src/utils/jwt.js`)
+- `JWT_EXPIRES_IN` - Token expiration (optional, default: '7d')
+- `PORT` - Server port (optional, default: 5000)
+- `GOOGLE_MAPS_API_KEY` - Google Maps integration (optional)
+
+**Database Connection:**
+- File: `be/src/config/database.js`
+- Uses `mongoose.connect(process.env.MONGODB_URI)`
+- Configured for MongoDB Atlas (no local MongoDB needed)
+
+**Scripts in `be/package.json`:**
+- `npm start` - Production mode (`node src/index.js`)
+- `npm run dev` - Development mode with nodemon
+
+**Hard-coded URLs:**
+- ✅ **No hard-coded `localhost` URLs found in backend code**
+
+**Special Requirements:**
+- No file uploads directory needed (images stored as external URLs)
+- No special directories required
+
+### 3. Frontend Details
+
+**Build Tool:** Create React App (standard CRA setup)
+
+**Scripts in `fe/package.json`:**
+- `npm start` - Development server (port 3000)
+- `npm run build` - Production build
+
+**API Base URL Configuration:**
+- File: `fe/src/services/api.js` line 2
+- Code: `const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';`
+- ⚠️ **Hard-coded fallback:** Falls back to `http://localhost:5000/api` if env var not set
+
+**Environment Variables:**
+- `REACT_APP_API_URL` - Backend API base URL (REQUIRED for production)
+- `REACT_APP_GOOGLE_MAPS_API_KEY` - Google Maps integration (optional)
+- `REACT_APP_DEV_MODE` - Development features flag (optional)
+
+**Build Output Directory:** `fe/build/` (standard CRA output)
+
+### 4. Auth / CORS Configuration
+
+**CORS:**
+- Configured in `be/src/index.js` line 9 with `app.use(cors())`
+- Currently allows ALL origins (default CORS settings)
+- ⚠️ **Recommendation:** Restrict CORS to your EC2 domain in production
+
+**Authentication:**
+- Uses JWT with Bearer tokens in Authorization header
+- No cookies, no domain-specific configurations
+- Token stored client-side (likely localStorage)
+
+### 5. Other Important Details
+
+**Node Version:** No specific version requirement in package.json (any modern Node.js 16+ should work)
+
+**Required Files/Folders:** None - all data uses external URLs for images
+
+**Image Storage:** Images are stored as URLs (external links), not uploaded files
+
+---
+
+## Deployment Checklist
+
+### 1. Backend Configuration
+
+**Install dependencies:**
+```bash
+cd /var/www/trekmate/be
+npm install --production
+```
+
+**Required `.env` file for backend** (`/var/www/trekmate/be/.env`):
+```bash
+# Server Configuration
+PORT=5000
+
+# Database (MongoDB Atlas)
+MONGODB_URI=<YOUR_MONGODB_ATLAS_CONNECTION_STRING>
+
+# JWT Configuration
+JWT_SECRET=<GENERATE_STRONG_SECRET_HERE>
+JWT_EXPIRES_IN=7d
+
+# Google Maps (optional)
+GOOGLE_MAPS_API_KEY=<YOUR_GOOGLE_MAPS_KEY>
+```
+
+**Start backend with PM2:**
+```bash
+cd /var/www/trekmate/be
+pm2 start src/index.js --name trekmate-api
+pm2 save
+pm2 startup
+```
+
+### 2. Frontend Configuration
+
+**Required `.env` file for frontend** (`/var/www/trekmate/fe/.env.production`):
+```bash
+# API Configuration - MUST point to your EC2 instance
+REACT_APP_API_URL=https://<YOUR_EC2_DOMAIN>/api
+
+# Google Maps (optional - must match backend key)
+REACT_APP_GOOGLE_MAPS_API_KEY=<YOUR_GOOGLE_MAPS_KEY>
+```
+
+**Build the frontend:**
+```bash
+cd /var/www/trekmate/fe
+npm install
+npm run build
+```
+
+This creates the production build in `fe/build/` directory.
+
+**Copy build to Nginx root:**
+```bash
+sudo mkdir -p /var/www/trekmate_frontend
+sudo cp -r /var/www/trekmate/fe/build/* /var/www/trekmate_frontend/
+sudo chown -R www-data:www-data /var/www/trekmate_frontend
+```
+
+### 3. Nginx Configuration
+
+**Create Nginx server block** (`/etc/nginx/sites-available/trekmate`):
+
+```nginx
+server {
+    listen 80;
+    server_name <YOUR_EC2_DOMAIN_OR_IP>;
+
+    # Frontend - Serve React build
+    root /var/www/trekmate_frontend;
+    index index.html;
+
+    # SPA routing - all non-API requests go to index.html
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # API reverse proxy to Node.js backend
+    location /api/ {
+        proxy_pass http://127.0.0.1:5000/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    # Cache static assets
+    location ~* \.(jpg|jpeg|png|gif|ico|css|js|svg|woff|woff2|ttf|eot)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+}
+```
+
+**Enable the site:**
+```bash
+sudo ln -s /etc/nginx/sites-available/trekmate /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl restart nginx
+```
+
+### 4. CORS Configuration (IMPORTANT)
+
+⚠️ **Security recommendation:** Update CORS to restrict origins in production.
+
+Edit `be/src/index.js` line 9 and replace:
+```javascript
+app.use(cors());
+```
+
+With:
+```javascript
+app.use(cors({
+   origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
+   credentials: true
+}));
+```
+
+Then add to backend `.env`:
+```bash
+ALLOWED_ORIGINS=https://<YOUR_EC2_DOMAIN>,http://<YOUR_EC2_IP>
+```
+
+---
+
+## Required Environment Variables
+
+### Backend (`/var/www/trekmate/be/.env`)
+
+| Variable | Required | Description | Example |
+|----------|----------|-------------|---------|
+| `MONGODB_URI` | ✅ Yes | MongoDB Atlas connection string | `mongodb+srv://user:pass@cluster.mongodb.net/trekmate?retryWrites=true&w=majority` |
+| `JWT_SECRET` | ✅ Yes | Secret key for JWT signing (generate strong random string) | `your-super-secret-256-bit-key-here` |
+| `PORT` | ⚠️ Optional | Backend server port | `5000` (default) |
+| `JWT_EXPIRES_IN` | ⚠️ Optional | JWT token expiration | `7d` (default) |
+| `GOOGLE_MAPS_API_KEY` | ⚠️ Optional | Google Maps integration | `AIza...` |
+| `ALLOWED_ORIGINS` | ⚠️ Recommended | CORS allowed origins (comma-separated) | `https://yourdomain.com` |
+
+### Frontend (`/var/www/trekmate/fe/.env.production`)
+
+| Variable | Required | Description | Example |
+|----------|----------|-------------|---------|
+| `REACT_APP_API_URL` | ✅ Yes | Backend API base URL | `https://api.yourdomain.com/api` or `https://yourdomain.com/api` |
+| `REACT_APP_GOOGLE_MAPS_API_KEY` | ⚠️ Optional | Google Maps (must match backend if used) | `AIza...` |
+
+**⚠️ Critical:** `REACT_APP_API_URL` must be set during build time - it gets baked into the frontend bundle.
+
+---
+
+## Nginx Config Example
+
+See full configuration in section 3 above. Key points:
+
+- **Frontend root:** `/var/www/trekmate_frontend` (contains built React app)
+- **SPA routing:** `try_files $uri $uri/ /index.html;` ensures client-side routing works
+- **API proxy:** `/api/` → `http://127.0.0.1:5000/` (proxies to Node backend)
+- **Static caching:** Aggressive caching for assets (1 year)
+
+---
+
+## Update Procedure
+
+When you push new code and want to redeploy:
+
+### 1. Pull latest code
+```bash
+cd /var/www/trekmate
+git pull origin main  # or your branch name
+```
+
+### 2. Update backend (if backend changed)
+```bash
+cd /var/www/trekmate/be
+npm install --production
+pm2 restart trekmate-api
+pm2 logs trekmate-api --lines 50  # Check for errors
+```
+
+### 3. Update frontend (if frontend changed)
+```bash
+cd /var/www/trekmate/fe
+npm install
+npm run build
+sudo rm -rf /var/www/trekmate_frontend/*
+sudo cp -r build/* /var/www/trekmate_frontend/
+sudo chown -R www-data:www-data /var/www/trekmate_frontend
+```
+
+### 4. Verify deployment
+```bash
+# Check backend health
+curl http://localhost:5000/api/health
+
+# Check Nginx status
+sudo nginx -t
+sudo systemctl status nginx
+
+# Check PM2 status
+pm2 status
+```
+
+---
+
+## Pre-Deployment Checklist
+
+Before deploying, ensure:
+
+- [ ] MongoDB Atlas cluster is created and connection string is ready
+- [ ] Generate a strong JWT_SECRET (use: `openssl rand -base64 32`)
+- [ ] EC2 security group allows inbound traffic on ports 80 and 443
+- [ ] Domain name (if using) points to EC2 instance
+- [ ] SSL certificate obtained (recommend using Certbot for Let's Encrypt)
+- [ ] Node.js 16+ installed on EC2 (`node --version`)
+- [ ] nginx, git, and pm2 installed
+- [ ] Created `/var/www/` directory with proper permissions
+
+---
+
+## Complete Deployment Script
+
+Here's a consolidated script for initial deployment on a fresh Ubuntu EC2 instance:
+
+```bash
+#!/bin/bash
+set -e
+
+echo "🚀 TrekMate Deployment Script"
+
+# Update system
+echo "📦 Updating system packages..."
+sudo apt update && sudo apt upgrade -y
+
+# Install Node.js 18.x
+echo "📦 Installing Node.js..."
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+sudo apt install -y nodejs
+
+# Install required packages
+echo "📦 Installing nginx, git, and pm2..."
+sudo apt install -y nginx git
+sudo npm install -g pm2
+
+# Create deployment directory
+echo "📁 Creating deployment directory..."
+sudo mkdir -p /var/www
+cd /var/www
+
+# Clone repository
+echo "📥 Cloning TrekMate repository..."
+sudo git clone https://github.com/VietDuck2k2/trekmate.git
+sudo chown -R $USER:$USER /var/www/trekmate
+
+# Setup backend
+echo "🔧 Setting up backend..."
+cd /var/www/trekmate/be
+npm install --production
+
+# Create backend .env file (you must edit this manually)
+cat > .env << 'EOF'
+PORT=5000
+MONGODB_URI=<YOUR_MONGODB_ATLAS_CONNECTION_STRING>
+JWT_SECRET=<GENERATE_STRONG_SECRET_HERE>
+JWT_EXPIRES_IN=7d
+GOOGLE_MAPS_API_KEY=<YOUR_GOOGLE_MAPS_KEY>
+ALLOWED_ORIGINS=https://<YOUR_DOMAIN>
+EOF
+
+echo "⚠️  IMPORTANT: Edit /var/www/trekmate/be/.env with your actual values!"
+
+# Setup frontend
+echo "🔧 Setting up frontend..."
+cd /var/www/trekmate/fe
+
+# Create frontend .env.production file (you must edit this manually)
+cat > .env.production << 'EOF'
+REACT_APP_API_URL=https://<YOUR_DOMAIN>/api
+REACT_APP_GOOGLE_MAPS_API_KEY=<YOUR_GOOGLE_MAPS_KEY>
+EOF
+
+echo "⚠️  IMPORTANT: Edit /var/www/trekmate/fe/.env.production with your actual domain!"
+
+npm install
+npm run build
+
+# Copy frontend build to nginx root
+echo "📋 Copying frontend build to nginx root..."
+sudo mkdir -p /var/www/trekmate_frontend
+sudo cp -r build/* /var/www/trekmate_frontend/
+sudo chown -R www-data:www-data /var/www/trekmate_frontend
+
+# Configure Nginx
+echo "🌐 Configuring Nginx..."
+sudo tee /etc/nginx/sites-available/trekmate > /dev/null << 'EOF'
+server {
+    listen 80;
+    server_name <YOUR_EC2_DOMAIN_OR_IP>;
+
+    root /var/www/trekmate_frontend;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    location /api/ {
+        proxy_pass http://127.0.0.1:5000/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    location ~* \.(jpg|jpeg|png|gif|ico|css|js|svg|woff|woff2|ttf|eot)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+}
+EOF
+
+echo "⚠️  IMPORTANT: Edit /etc/nginx/sites-available/trekmate with your actual server_name!"
+
+# Enable Nginx site
+sudo ln -sf /etc/nginx/sites-available/trekmate /etc/nginx/sites-enabled/
+sudo rm -f /etc/nginx/sites-enabled/default
+sudo nginx -t
+
+# Start backend with PM2
+echo "🚀 Starting backend with PM2..."
+cd /var/www/trekmate/be
+pm2 start src/index.js --name trekmate-api
+pm2 save
+pm2 startup
+
+# Restart Nginx
+echo "🔄 Restarting Nginx..."
+sudo systemctl restart nginx
+
+echo "✅ Deployment complete!"
+echo ""
+echo "Next steps:"
+echo "1. Edit /var/www/trekmate/be/.env with your MongoDB URI and secrets"
+echo "2. Edit /var/www/trekmate/fe/.env.production with your domain"
+echo "3. Edit /etc/nginx/sites-available/trekmate with your server_name"
+echo "4. Rebuild frontend: cd /var/www/trekmate/fe && npm run build && sudo cp -r build/* /var/www/trekmate_frontend/"
+echo "5. Restart backend: pm2 restart trekmate-api"
+echo "6. Restart nginx: sudo systemctl restart nginx"
+echo "7. Setup SSL with: sudo certbot --nginx -d yourdomain.com"
+```
+
+---
+
+## SSL Certificate Setup (Optional but Recommended)
+
+After basic deployment, secure your site with HTTPS:
+
+```bash
+# Install Certbot
+sudo apt install -y certbot python3-certbot-nginx
+
+# Get SSL certificate (replace with your domain)
+sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com
+
+# Auto-renewal is configured automatically by Certbot
+# Test renewal with:
+sudo certbot renew --dry-run
+```
+
+Certbot will automatically update your Nginx configuration to use HTTPS.
+
+---
+
+## Troubleshooting
+
+### Backend won't start
+```bash
+# Check PM2 logs
+pm2 logs trekmate-api
+
+# Common issues:
+# - Missing/incorrect MONGODB_URI in .env
+# - Port 5000 already in use (change PORT in .env)
+# - Missing JWT_SECRET
+```
+
+### Frontend shows API errors
+```bash
+# Check if backend is running
+curl http://localhost:5000/api/health
+
+# Check browser console for API URL
+# Ensure REACT_APP_API_URL was set BEFORE build
+
+# If you changed .env.production, rebuild:
+cd /var/www/trekmate/fe
+npm run build
+sudo cp -r build/* /var/www/trekmate_frontend/
+```
+
+### Nginx errors
+```bash
+# Test configuration
+sudo nginx -t
+
+# Check error logs
+sudo tail -f /var/log/nginx/error.log
+
+# Restart nginx
+sudo systemctl restart nginx
+```
+
+### MongoDB connection fails
+```bash
+# Check if MongoDB Atlas IP whitelist includes your EC2 IP
+# Add 0.0.0.0/0 for testing (not recommended for production)
+
+# Verify connection string format:
+# mongodb+srv://username:password@cluster.mongodb.net/database?retryWrites=true&w=majority
+```
+
+---
+
+**Note:** All commands and configurations above are specific to your TrekMate repository structure. Test each step carefully and monitor logs for issues.
