@@ -39,7 +39,13 @@ const authMiddleware = async (req, res, next) => {
       req.user = user;
       next();
    } catch (error) {
-      console.error('Auth middleware error:', error);
+      // Log the specific JWT error type for easier debugging
+      const errType = error.name === 'TokenExpiredError'
+         ? 'Token expired'
+         : error.name === 'JsonWebTokenError'
+            ? `JWT error: ${error.message}`
+            : error.message;
+      console.error('[Auth] Failed to authenticate:', errType);
       res.status(401).json({
          success: false,
          message: 'Invalid or expired token'

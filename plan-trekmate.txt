@@ -517,3 +517,12 @@ sudo systemctl restart nginx
 ---
 
 **Note:** All commands and configurations above are specific to your TrekMate repository structure. Test each step carefully and monitor logs for issues.
+
+
+
+
+
+
+
+Connection string:
+mongodb+srv://nguyenvietduc170802_db_user:17082002Aa@@trekmate.josdz4p.mongodb.net/?appName=trekmate

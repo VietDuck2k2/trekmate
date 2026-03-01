@@ -1,7 +1,10 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const http = require('http');
+const { Server } = require('socket.io');
 const connectDB = require('./config/database');
+const initSocket = require('./services/socketService');
 
 const app = express();
 
@@ -23,6 +26,9 @@ app.use('/api/trips', require('./routes/trip.routes'));
 // Review routes
 app.use('/api/trips', require('./routes/review.routes'));
 
+// Chat routes
+app.use('/api/trips', require('./routes/chat.routes'));
+
 // Profile routes
 app.use('/api/me', require('./routes/profile.routes'));
 
@@ -39,11 +45,26 @@ app.use('/api/admin/ads', require('./routes/admin/ads.routes'));
 
 const PORT = process.env.PORT || 5000;
 
+// Create HTTP server and attach Socket.IO
+const httpServer = http.createServer(app);
+
+const io = new Server(httpServer, {
+   cors: {
+      origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+      methods: ['GET', 'POST'],
+      credentials: true
+   }
+});
+
+// Initialize socket event handlers
+initSocket(io);
+
 // Connect to MongoDB and start server
 const startServer = async () => {
    await connectDB();
-   app.listen(PORT, () => {
+   httpServer.listen(PORT, () => {
       console.log(`Trekmate API running on port ${PORT}`);
+      console.log(`Socket.IO enabled`);
    });
 };
 

@@ -328,6 +328,17 @@ const TripDetailPage = () => {
                            {trip.maxMembers && trip.members?.length >= trip.maxMembers ? 'Trip Full' : 'Join Trip'}
                         </button>
                      )}
+
+                     {/* Chat button: visible only to members and owner */}
+                     {user && (isOwner() || isUserJoined()) && (
+                        <button
+                           onClick={() => navigate(`/trips/${trip._id}/chat`)}
+                           className="bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/30 text-white px-8 py-4 rounded-xl font-bold flex items-center gap-2 shadow-lg transition-all whitespace-nowrap"
+                        >
+                           <span className="material-icons-round">chat</span>
+                           Chat nhóm
+                        </button>
+                     )}
                   </div>
                </div>
             </div>
