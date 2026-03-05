@@ -1,0 +1,358 @@
+TrekMate Deployment Guide (AWS EC2)
+
+1. Overview
+
+- Server: AWS EC2, Amazon Linux 2023, t3.micro
+- Backend: Node.js (Express) on port 5000
+- Frontend: React (Create React App) – static build
+- Process Manager: PM2
+- Web Server / Reverse Proxy: Nginx
+- Database: MongoDB Atlas
+- Domain: trekmate.online (+ www.trekmate.online)
+- HTTPS: Let’s Encrypt (certbot, nginx plugin)
+
+Repository layout
+
+~/trekmate
+  ├── be/          # backend
+  ├── fe/          # frontend
+  └── deploy.sh    # deployment script
+
+
+2. EC2 Setup
+
+2.1 Launch instance
+
+- AMI: Amazon Linux 2023 kernel 6.1
+- Instance type: t3.micro
+- Key pair: create & download (e.g. trekmate-key.pem)
+- Security group inbound rules:
+  - SSH (22) – ideally restricted to your IP
+  - HTTP (80)
+  - HTTPS (443)
+
+2.2 SSH access
+
+On your local machine (PowerShell example):
+
+cd C:\path\to\pem
+ssh -i "trekmate-key.pem" ec2-user@<PUBLIC_IP>
+
+Type yes the first time to accept the host fingerprint.
+
+
+3. Base packages
+
+sudo dnf update -y
+sudo dnf install -y git nginx
+
+
+4. Node.js + NVM + PM2
+
+4.1 Install NVM
+
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+
+export NVM_DIR="$HOME/.nvm"
+. "$NVM_DIR/nvm.sh"
+. "$NVM_DIR/bash_completion"
+
+Every new SSH session:
+export NVM_DIR="$HOME/.nvm"; . "$NVM_DIR/nvm.sh"; . "$NVM_DIR/bash_completion"
+
+4.2 Install Node 20
+
+nvm install 20
+nvm use 20
+
+4.3 Install PM2
+
+npm install -g pm2
+
+
+5. Clone project
+
+cd ~
+git clone https://github.com/<USER>/<REPO>.git trekmate
+cd trekmate
+
+
+6. Environment files
+
+6.1 Backend – ~/trekmate/be/.env
+
+MONGODB_URI=mongodb+srv://<user>:<password>@<cluster>/<dbname>?appName=trekmate
+JWT_SECRET=your-super-secret-jwt-key-change-in-production
+PORT=5000
+
+6.2 Frontend – ~/trekmate/fe/.env
+
+Production (HTTPS):
+
+REACT_APP_API_URL=https://trekmate.online/api
+REACT_APP_DEV_MODE=false
+REACT_APP_GOOGLE_MAPS_API_KEY=your_google_maps_api_key_here
+
+Local development (optional):
+
+REACT_APP_API_URL=http://localhost:5000/api
+
+
+7. Backend with PM2
+
+cd ~/trekmate/be
+
+if [ -f package-lock.json ]; then
+  npm ci --omit=dev
+else
+  npm install --omit=dev
+fi
+
+pm2 start src/index.js --name trekmate-api
+pm2 save
+
+pm2 startup systemd
+# run the command printed by pm2 as sudo
+pm2 save
+
+Check:
+
+pm2 status
+
+
+8. Nginx configuration
+
+Edit file:
+
+sudo nano /etc/nginx/conf.d/default.conf
+
+Content:
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name trekmate.online www.trekmate.online;
+
+    root /usr/share/nginx/html;
+    index index.html;
+
+    location / {
+        try_files $uri /index.html;
+    }
+
+    location /api/ {
+        proxy_pass http://127.0.0.1:5000/;
+        proxy_http_version 1.1;
+        proxy_set_header   Host              $host;
+        proxy_set_header   X-Real-IP         $remote_addr;
+        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+    }
+}
+
+Apply:
+
+sudo nginx -t
+sudo systemctl enable nginx
+sudo systemctl start nginx
+sudo systemctl reload nginx
+
+
+9. Frontend build & static deploy
+
+cd ~/trekmate/fe
+
+if [ -f package-lock.json ]; then
+  npm ci
+else
+  npm install
+fi
+
+npm run build
+
+sudo rm -rf /usr/share/nginx/html/*
+sudo cp -r build/* /usr/share/nginx/html/
+
+sudo nginx -t
+sudo systemctl reload nginx
+
+Test with http://<PUBLIC_IP>.
+
+
+10. Domain configuration
+
+At DNS provider for trekmate.online:
+
+- A record: @ → <PUBLIC_IP>
+- CNAME record: www → trekmate.online
+
+After propagation, http://trekmate.online should open the site.
+
+
+11. HTTPS with Let’s Encrypt
+
+Install:
+
+sudo dnf install -y certbot python3-certbot-nginx
+
+Issue cert:
+
+sudo certbot --nginx -d trekmate.online -d www.trekmate.online
+
+- Choose redirect all HTTP to HTTPS.
+
+Test auto-renew:
+
+sudo certbot renew --dry-run
+
+Now use https://trekmate.online.
+
+
+12. One-command deployment script
+
+Create ~/trekmate/deploy.sh:
+
+#!/usr/bin/env bash
+set -e
+
+echo "=========== TrekMate deploy ==========="
+
+
+echo ""
+echo "=== [BE] Install dependencies ==="
+cd ~/trekmate/be
+if [ -f package-lock.json ]; then
+  npm ci --omit=dev || npm install --omit=dev
+else
+  npm install --omit=dev
+fi
+
+
+echo ""
+echo "=== [BE] Start/Restart PM2 ==="
+if pm2 describe trekmate-api >/dev/null 2>&1; then
+  pm2 restart trekmate-api
+else
+  pm2 start src/index.js --name trekmate-api
+fi
+
+
+echo ""
+echo "=== [FE] Install dependencies ==="
+cd ~/trekmate/fe
+if [ -f package-lock.json ]; then
+  npm ci || npm install
+else
+  npm install
+fi
+
+
+echo ""
+echo "=== [FE] Build production ==="
+npm run build
+
+
+echo ""
+echo "=== [FE] Copy build -> /usr/share/nginx/html ==="
+sudo rm -rf /usr/share/nginx/html/*
+sudo cp -r build/* /usr/share/nginx/html/
+
+
+echo ""
+echo "=== [Nginx] Test & reload ==="
+sudo nginx -t
+sudo systemctl reload nginx
+
+
+echo ""
+echo "✅ Deploy completed successfully!"
+
+Make executable:
+
+cd ~/trekmate
+chmod +x deploy.sh
+
+Deployment flow
+
+Local:
+
+git add .
+git commit -m "Update"
+git push origin main
+
+On EC2:
+
+ssh -i "trekmate-key.pem" ec2-user@<PUBLIC_IP>
+cd ~/trekmate
+git pull origin main
+./deploy.sh
+
+
+13. Google Analytics (GA4)
+
+1. Create GA4 property for trekmate.online.
+2. Get Measurement ID: G-XXXXXXXXXX.
+3. On local machine edit fe/public/index.html and add inside <head>:
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX');
+</script>
+
+4. Commit & push; then on EC2:
+
+cd ~/trekmate
+git pull origin main
+./deploy.sh
+
+5. Open https://trekmate.online and check Realtime in GA dashboard.
+
+
+14. Common issues & fixes
+
+14.1 Mixed content (blocked:mixed-content)
+
+- Page is HTTPS but API URL is HTTP.
+- Ensure FE .env in production:
+
+  REACT_APP_API_URL=https://trekmate.online/api
+
+- Rebuild FE and redeploy (./deploy.sh).
+
+14.2 JSON parse error with <!DOCTYPE ...>
+
+- FE is calling a URL that returns HTML (like Nginx default page) instead of JSON.
+- Check:
+  - REACT_APP_API_URL
+  - Nginx /api/ proxy block
+
+14.3 deploy.sh: No such file or directory
+
+- Ensure you are in correct folder:
+
+  cd ~/trekmate
+  ls
+
+- If missing, recreate deploy.sh with the script above and:
+
+  chmod +x deploy.sh
+
+14.4 Nginx 403 / 404 after deploy
+
+- Check that build files exist:
+
+  ls /usr/share/nginx/html
+
+- Ensure Nginx root matches:
+
+  root /usr/share/nginx/html;
+  index index.html;
+
+- Reload Nginx:
+
+  sudo nginx -t
+  sudo systemctl reload nginx
