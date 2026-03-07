@@ -10,9 +10,13 @@ const initSocket = require('./services/socketService');
 
 const app = express();
 
+// Trust proxy for HTTPS behind Nginx/AWS
+app.set('trust proxy', 1);
+
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(passport.initialize());
 
 // Simple health check
 app.get('/api/health', (req, res) => {
