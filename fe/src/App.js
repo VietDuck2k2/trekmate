@@ -24,6 +24,9 @@ import ChatPage from './pages/ChatPage';
 import AdminUsersPage from './pages/admin/AdminUsersPage';
 import AdminTripsPage from './pages/admin/AdminTripsPage';
 import AdminAdsPage from './pages/admin/AdminAdsPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
+import LoginSuccess from './pages/LoginSuccess';
 
 // Styles
 import './styles/global.css';
@@ -39,6 +42,9 @@ function App() {
               {/* Public routes */}
               <Route path="/" element={<HomePage />} />
               <Route path="/ads" element={<AdsPage />} />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+              <Route path="/login-success" element={<LoginSuccess />} />
 
               {/* Trip routes - IMPORTANT: specific routes must come before parameterized routes */}
               <Route path="/trips/create" element={

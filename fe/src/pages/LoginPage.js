@@ -106,7 +106,7 @@ const LoginPage = () => {
                   <div>
                      <div className="flex items-center justify-between mb-1.5">
                         <label className="block text-sm font-medium text-slate-700 dark:text-slate-300" htmlFor="password">Password</label>
-                        <a className="text-xs font-semibold text-primary hover:text-emerald-700 transition" href="#">Forgot password?</a>
+                        <Link className="text-xs font-semibold text-primary hover:text-emerald-700 transition" to="/forgot-password">Forgot password?</Link>
                      </div>
                      <input
                         className="block w-full rounded-xl border border-slate-200 bg-slate-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white px-4 py-3 text-slate-900 shadow-sm transition focus:border-primary focus:ring-primary focus:ring-2 sm:text-sm outline-none"
@@ -141,14 +141,13 @@ const LoginPage = () => {
                         <span className="bg-white dark:bg-slate-900 px-3 text-slate-500 dark:text-slate-400">Or continue with</span>
                      </div>
                   </div>
-                  <div className="mt-6 grid grid-cols-2 gap-4">
-                     <button className="flex w-full items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white dark:bg-slate-800 dark:border-slate-700 px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+                  <div className="mt-6">
+                     <button
+                        onClick={() => window.location.href = `${process.env.REACT_APP_API_URL}/auth/google`}
+                        className="flex w-full items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white dark:bg-slate-800 dark:border-slate-700 px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition shadow-sm"
+                     >
                         <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="h-5 w-5" />
-                        Google
-                     </button>
-                     <button className="flex w-full items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white dark:bg-slate-800 dark:border-slate-700 px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition">
-                        <img src="https://www.svgrepo.com/show/512317/github-142.svg" alt="GitHub" className="h-5 w-5 dark:invert" />
-                        GitHub
+                        Login with Google
                      </button>
                   </div>
                </div>

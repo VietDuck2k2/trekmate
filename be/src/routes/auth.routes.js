@@ -1,7 +1,11 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
+const passport = require('passport');
 const User = require('../models/user.model');
 const { generateToken } = require('../utils/jwt');
+const { sendResetPasswordEmail } = require('../utils/mailer');
+require('../config/passport');
 
 const router = express.Router();
 
@@ -171,6 +175,101 @@ router.post('/login', async (req, res) => {
          success: false,
          message: 'Server error during login'
       });
+   }
+});
+
+/**
+ * GET /api/auth/google
+ * Initiate Google OAuth
+ */
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+/**
+ * GET /api/auth/google/callback
+ * Google OAuth callback
+ */
+router.get('/google/callback',
+   passport.authenticate('google', { session: false, failureRedirect: '/login' }),
+   (req, res) => {
+      // Successful authentication, generate JWT
+      const token = generateToken(req.user._id);
+
+      // Redirect to frontend with token in URL (frontend will save it and redirect)
+      res.redirect(`${process.env.FRONTEND_URL}/login-success?token=${token}&user=${encodeURIComponent(JSON.stringify({
+         _id: req.user._id,
+         email: req.user.email,
+         role: req.user.role,
+         displayName: req.user.displayName,
+         avatarUrl: req.user.avatarUrl
+      }))}`);
+   }
+);
+
+/**
+ * POST /api/auth/forgot-password
+ * Request password reset
+ */
+router.post('/forgot-password', async (req, res) => {
+   try {
+      const { email } = req.body;
+      const user = await User.findOne({ email });
+
+      if (!user) {
+         // Security: don't reveal if user exists
+         return res.json({
+            success: true,
+            message: 'If an account exists with this email, a reset link has been sent.'
+         });
+      }
+
+      // Generate token
+      const token = crypto.randomBytes(20).toString('hex');
+      user.resetPasswordToken = token;
+      user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+
+      await user.save();
+
+      // Send email
+      await sendResetPasswordEmail(user.email, token);
+
+      res.json({
+         success: true,
+         message: 'If an account exists with this email, a reset link has been sent.'
+      });
+   } catch (error) {
+      console.error('Forgot password error:', error);
+      res.status(500).json({ success: false, message: 'Server error' });
+   }
+});
+
+/**
+ * POST /api/auth/reset-password/:token
+ * Reset password with token
+ */
+router.post('/reset-password/:token', async (req, res) => {
+   try {
+      const { password } = req.body;
+      const user = await User.findOne({
+         resetPasswordToken: req.params.token,
+         resetPasswordExpires: { $gt: Date.now() }
+      });
+
+      if (!user) {
+         return res.status(400).json({ success: false, message: 'Invalid or expired token' });
+      }
+
+      // Hash new password
+      const saltRounds = 12;
+      user.passwordHash = await bcrypt.hash(password, saltRounds);
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpires = undefined;
+
+      await user.save();
+
+      res.json({ success: true, message: 'Password reset successful' });
+   } catch (error) {
+      console.error('Reset password error:', error);
+      res.status(500).json({ success: false, message: 'Server error' });
    }
 });
 

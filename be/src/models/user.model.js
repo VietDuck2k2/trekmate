@@ -30,9 +30,16 @@ const userSchema = new mongoose.Schema({
       trim: true,
       lowercase: true
    },
+   googleId: {
+      type: String,
+      unique: true,
+      sparse: true // Allows null/missing for non-google users
+   },
    passwordHash: {
       type: String,
-      required: true
+      required: function () {
+         return !this.googleId; // Only required if not OAuth
+      }
    },
    role: {
       type: String,
@@ -61,6 +68,12 @@ const userSchema = new mongoose.Schema({
       type: String,
       enum: ['ACTIVE', 'BLOCKED'],
       default: 'ACTIVE'
+   },
+   resetPasswordToken: {
+      type: String
+   },
+   resetPasswordExpires: {
+      type: Date
    },
    brandInfo: {
       type: brandInfoSchema,
