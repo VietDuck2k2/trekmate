@@ -279,10 +279,10 @@ const CreateTripPage = () => {
                                     value={formData.costPerPerson}
                                     onChange={handleInputChange}
                                     className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl pl-10 pr-4 py-3 focus:ring-2 focus:ring-primary dark:text-white transition-all"
-                                    placeholder="0"
+                                    placeholder="1000000"
                                     type="number"
                                     min="0"
-                                    step="0.01"
+                                    step="1000"
                                  />
                               </div>
                            </div>
@@ -403,7 +403,7 @@ const CreateTripPage = () => {
                            <div className="p-6 space-y-6">
                               <div className="flex gap-2">
                                  <span className="px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded-lg text-xs font-bold uppercase text-slate-500">{formData.difficulty}</span>
-                                 {formData.costPerPerson && <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 rounded-lg text-xs font-bold uppercase text-green-600">${formData.costPerPerson}</span>}
+                                 {formData.costPerPerson && <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 rounded-lg text-xs font-bold uppercase text-green-600">{Number(formData.costPerPerson).toLocaleString('vi-VN')} VNĐ</span>}
                               </div>
                               <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed line-clamp-3 min-h-[3rem]">
                                  {formData.description || 'Start typing your description to see it appear here. Share what makes this trek special...'}

@@ -1,0 +1,23 @@
+
+[UX AUDIT] 5 files checked
+--------------------------------------------------
+[!] ISSUES (2):
+  - [Hick's Law] index.html: 9 nav items (Max 7)
+  - [Typography] index.html: 4 font families detected. Limit to 2-3 for cohesion.
+[*] WARNINGS (14):
+  - [Serial Position] index.html: Last nav item may not be important. Place key actions at start/end.
+  - [Animation] index.html: Async operations without loading indicator. Add skeleton or spinner for perceived performance.
+  - [Von Restorff] App.css: No primary CTA
+  - [Typography] Navbar.css: Fixed font sizes without clamp(). Consider fluid typography: clamp(MIN, PREFERRED, MAX)
+  - [Performance] Navbar.css: Animating expensive properties (height, margin, padding, right, width, top). Use transform/opacity where possible.
+  - [Accessibility] Navbar.css: Animations found without prefers-reduced-motion check
+  - [Color] Navbar.css: 7 distinct colors. Consider 60-30-10 rule: dominant (60%), secondary (30%), accent (10%).
+  - [Von Restorff] global.css: No primary CTA
+  - [Cognitive Load] global.css: High visual noise detected. Many colors and borders increase cognitive load.
+  - [Typography] global.css: Fixed font sizes without clamp(). Consider fluid typography: clamp(MIN, PREFERRED, MAX)
+  - [Performance] global.css: Animating expensive properties (height, bottom, margin, padding, width, top). Use transform/opacity where possible.
+  - [Accessibility] global.css: Animations found without prefers-reduced-motion check
+  - [Visual] global.css: All shadows at same opacity level. Vary shadow intensity for elevation hierarchy.
+  - [Color] global.css: 9 distinct colors. Consider 60-30-10 rule: dominant (60%), secondary (30%), accent (10%).
+[+] PASSED CHECKS: 2
+STATUS: FAIL

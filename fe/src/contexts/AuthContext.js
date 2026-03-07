@@ -29,43 +29,43 @@ export const AuthProvider = ({ children }) => {
    }, []);
 
    // Login function
-   const login = (userData, authToken) => {
+   const login = React.useCallback((userData, authToken) => {
       setUser(userData);
       setToken(authToken);
       localStorage.setItem('user', JSON.stringify(userData));
       localStorage.setItem('token', authToken);
-   };
+   }, []);
 
    // Logout function
-   const logout = () => {
+   const logout = React.useCallback(() => {
       setUser(null);
       setToken(null);
       localStorage.removeItem('user');
       localStorage.removeItem('token');
-   };
+   }, []);
 
    // Check if user has specific role
-   const hasRole = (role) => {
+   const hasRole = React.useCallback((role) => {
       return user?.role === role;
-   };
+   }, [user]);
 
    // Check if user is authenticated
-   const isAuthenticated = () => {
+   const isAuthenticated = React.useCallback(() => {
       return !!user && !!token && user.status !== 'BLOCKED';
-   };
+   }, [user, token]);
 
    // Check if user account is active
-   const isActive = () => {
+   const isActive = React.useCallback(() => {
       return user?.status === 'ACTIVE' || user?.status === undefined; // undefined for backward compatibility
-   };
+   }, [user]);
 
    // Update user data
-   const updateUser = (updatedUser) => {
+   const updateUser = React.useCallback((updatedUser) => {
       setUser(updatedUser);
       localStorage.setItem('user', JSON.stringify(updatedUser));
-   };
+   }, []);
 
-   const value = {
+   const value = React.useMemo(() => ({
       user,
       token,
       loading,
@@ -75,7 +75,7 @@ export const AuthProvider = ({ children }) => {
       isAuthenticated,
       isActive,
       updateUser
-   };
+   }), [user, token, loading, login, logout, hasRole, isAuthenticated, isActive, updateUser]);
 
    return (
       <AuthContext.Provider value={value}>
