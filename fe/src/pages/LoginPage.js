@@ -54,7 +54,7 @@ const LoginPage = () => {
             <img
                alt="Misty forest at dawn"
                className="absolute inset-0 h-full w-full object-cover"
-               src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b"
+               src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=100&w=2560&auto=format&fit=crop"
             />
             <div className="absolute inset-0 bg-black/20 backdrop-blur-[2px]"></div>
             <div className="absolute inset-0 flex flex-col justify-between p-12">

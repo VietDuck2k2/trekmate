@@ -134,7 +134,7 @@ const HomePage = () => {
             <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-slate-50/90 dark:to-slate-900/90"></div>
             <div className="relative h-full flex flex-col items-center justify-center text-center px-4 pt-10">
                <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-4 font-display tracking-tight">
-                  Explore the <span className="text-emerald-400">Wild</span>
+                  Explore the <span className="text-emerald-400">Journeys Ahead</span>
                </h1>
                <div className="w-full max-w-xl relative">
                   <input
@@ -166,8 +166,8 @@ const HomePage = () => {
                               key={tab.id}
                               onClick={() => setActiveTab(tab.id)}
                               className={`flex items-center gap-3 p-3 rounded-xl transition-all font-bold text-sm ${activeTab === tab.id
-                                    ? 'bg-primary text-white shadow-lg shadow-primary/20'
-                                    : 'hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-600 dark:text-slate-400'
+                                 ? 'bg-primary text-white shadow-lg shadow-primary/20'
+                                 : 'hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-600 dark:text-slate-400'
                                  }`}
                            >
                               <span className={`material-icons-round text-lg ${activeTab === tab.id ? 'text-white' : tab.color}`}>{tab.icon}</span>
