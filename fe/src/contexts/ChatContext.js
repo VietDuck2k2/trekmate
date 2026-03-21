@@ -4,7 +4,8 @@ import { useAuth } from './AuthContext';
 
 const ChatContext = createContext(null);
 
-const SOCKET_URL = process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000';
+const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const SOCKET_URL = apiUrl === '/api' ? window.location.origin : apiUrl.replace(/\/api\/?$/, '');
 
 // Pure utility — defined OUTSIDE component so reference never changes
 export const buildKey = (type, identifier) =>
