@@ -39,7 +39,7 @@ const RegisterPage = () => {
 
          if (role === 'BRAND') {
             if (!brandName.trim()) {
-               setError('Brand name is required for brand accounts');
+               setError('Tên thương hiệu là bắt buộc đối với tài khoản thương hiệu');
                setLoading(false);
                return;
             }
@@ -56,7 +56,7 @@ const RegisterPage = () => {
             navigate(redirectPath, { replace: true });
          }
       } catch (err) {
-         setError(err.message || 'Registration failed');
+         setError(err.message || 'Đăng ký thất bại');
       } finally {
          setLoading(false);
       }
@@ -67,7 +67,7 @@ const RegisterPage = () => {
          {/* Left Side - Image */}
          <div className="relative hidden w-full lg:block lg:w-1/2 xl:w-3/5">
             <img
-               alt="Mountain climber looking at horizon"
+               alt="Người leo núi nhìn về chân trời"
                className="absolute inset-0 h-full w-full object-cover"
                src="https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80"
             />
@@ -78,13 +78,13 @@ const RegisterPage = () => {
                   <span className="font-display text-white text-3xl tracking-wide font-bold">TrekMate</span>
                </div>
                <div className="max-w-md">
-                  <h2 className="font-display text-white text-5xl leading-tight mb-6 font-bold">Start your next great adventure.</h2>
+                  <h2 className="font-display text-white text-5xl leading-tight mb-6 font-bold">Bắt đầu cuộc phiêu lưu tuyệt vời tiếp theo của bạn.</h2>
                   <p className="text-white/90 text-lg leading-relaxed">
-                     Create an account to join treks, organize expeditions, or promote your outdoor brand.
+                     Tạo một tài khoản để tham gia các chuyến đi trekking, tổ chức thám hiểm, hoặc quảng bá thương hiệu đồ ngoài trời của bạn.
                   </p>
                </div>
                <div className="text-white/60 text-sm">
-                  © 2024 TrekMate. All rights reserved.
+                  © 2024 TrekMate. Bản quyền được bảo lưu.
                </div>
             </div>
          </div>
@@ -93,8 +93,8 @@ const RegisterPage = () => {
          <div className="flex w-full flex-col justify-center px-6 py-12 lg:w-1/2 xl:w-2/5 sm:px-12 md:px-24">
             <div className="mx-auto w-full max-w-sm">
                <div className="mb-8 text-center lg:text-left">
-                  <h1 className="font-display text-4xl font-bold text-slate-900 dark:text-white mb-3">Create an Account</h1>
-                  <p className="text-slate-500 dark:text-slate-400">Join the community of explorers today.</p>
+                  <h1 className="font-display text-4xl font-bold text-slate-900 dark:text-white mb-3">Tạo Tài Khoản</h1>
+                  <p className="text-slate-500 dark:text-slate-400">Tham gia cộng đồng những nhà thám hiểm ngay hôm nay.</p>
                </div>
 
                {error && (
@@ -106,12 +106,12 @@ const RegisterPage = () => {
 
                <form className="space-y-5" onSubmit={handleSubmit}>
                   <div>
-                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5" htmlFor="email">Email address</label>
+                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5" htmlFor="email">Địa chỉ Email</label>
                      <input
                         className="block w-full rounded-xl border border-slate-200 bg-slate-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white px-4 py-3 text-slate-900 shadow-sm transition focus:border-primary focus:ring-primary focus:ring-2 sm:text-sm outline-none"
                         id="email"
                         type="email"
-                        placeholder="name@example.com"
+                        placeholder="ten@example.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
@@ -120,12 +120,12 @@ const RegisterPage = () => {
                   </div>
 
                   <div>
-                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5" htmlFor="displayName">Display Name</label>
+                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5" htmlFor="displayName">Tên Hiển Thị</label>
                      <input
                         className="block w-full rounded-xl border border-slate-200 bg-slate-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white px-4 py-3 text-slate-900 shadow-sm transition focus:border-primary focus:ring-primary focus:ring-2 sm:text-sm outline-none"
                         id="displayName"
                         type="text"
-                        placeholder="Your Name"
+                        placeholder="Tên của bạn"
                         value={displayName}
                         onChange={(e) => setDisplayName(e.target.value)}
                         required
@@ -134,12 +134,12 @@ const RegisterPage = () => {
                   </div>
 
                   <div>
-                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5" htmlFor="password">Password</label>
+                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5" htmlFor="password">Mật khẩu</label>
                      <input
                         className="block w-full rounded-xl border border-slate-200 bg-slate-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white px-4 py-3 text-slate-900 shadow-sm transition focus:border-primary focus:ring-primary focus:ring-2 sm:text-sm outline-none"
                         id="password"
                         type="password"
-                        placeholder="Create a password (min 6 chars)"
+                        placeholder="Tạo mật khẩu (tối thiểu 6 ký tự)"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
@@ -149,7 +149,7 @@ const RegisterPage = () => {
                   </div>
 
                   <div>
-                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5" htmlFor="role">Account Type</label>
+                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5" htmlFor="role">Loại Tài Khoản</label>
                      <div className="relative">
                         <select
                            id="role"
@@ -158,8 +158,8 @@ const RegisterPage = () => {
                            disabled={loading}
                            className="block w-full rounded-xl border border-slate-200 bg-slate-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white px-4 py-3 text-slate-900 shadow-sm transition focus:border-primary focus:ring-primary focus:ring-2 sm:text-sm outline-none appearance-none"
                         >
-                           <option value="USER">Trekker (Individual)</option>
-                           <option value="BRAND">Brand / Business</option>
+                           <option value="USER">Phượt thủ (Cá nhân)</option>
+                           <option value="BRAND">Thương hiệu / Doanh nghiệp</option>
                         </select>
                         <span className="material-icons-round absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">expand_more</span>
                      </div>
@@ -167,12 +167,12 @@ const RegisterPage = () => {
 
                   {role === 'BRAND' && (
                      <div className="animate-fade-in">
-                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5" htmlFor="brandName">Brand Name *</label>
+                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5" htmlFor="brandName">Tên Thương Hiệu *</label>
                         <input
                            className="block w-full rounded-xl border border-slate-200 bg-slate-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white px-4 py-3 text-slate-900 shadow-sm transition focus:border-primary focus:ring-primary focus:ring-2 sm:text-sm outline-none"
                            id="brandName"
                            type="text"
-                           placeholder="Enter your brand name"
+                           placeholder="Nhập tên thương hiệu của bạn"
                            value={brandName}
                            onChange={(e) => setBrandName(e.target.value)}
                            required
@@ -186,12 +186,12 @@ const RegisterPage = () => {
                      type="submit"
                      disabled={loading}
                   >
-                     {loading ? 'Creating Account...' : 'Register'}
+                     {loading ? 'Đang tạo tải khoản...' : 'Đăng ký'}
                   </button>
                </form>
 
                <p className="mt-8 text-center text-sm text-slate-500 dark:text-slate-400">
-                  Already have an account? <Link className="font-semibold text-primary hover:text-emerald-700 transition" to="/login">Login here</Link>
+                  Đã có tài khoản? <Link className="font-semibold text-primary hover:text-emerald-700 transition" to="/login">Đăng nhập tại đây</Link>
                </p>
             </div>
          </div>

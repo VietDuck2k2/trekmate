@@ -38,9 +38,9 @@ const Navbar = () => {
                <Link to="/" className="navbar-brand">TrekMate</Link>
                <div className="navbar-nav">
                   <div className="user-menu">
-                     <span className="user-name blocked">Account Blocked</span>
+                     <span className="user-name blocked">Tài khoản bị khóa</span>
                      <button onClick={handleLogout} className="logout-btn">
-                        Logout
+                        Đăng xuất
                      </button>
                   </div>
                </div>
@@ -60,42 +60,42 @@ const Navbar = () => {
             {/* Navigation Links */}
             <div className="navbar-nav">
                {/* Always visible links */}
-               <Link to="/" className="nav-link">Trips</Link>
-               <Link to="/ads" className="nav-link">Ads</Link>
+               <Link to="/" className="nav-link">Chuyến đi</Link>
+               <Link to="/ads" className="nav-link">Quảng cáo</Link>
 
                {/* Guest links (not authenticated) */}
                {!isAuthenticated() && (
                   <>
-                     <Link to="/login" className="nav-link">Login</Link>
-                     <Link to="/register" className="nav-link">Register</Link>
+                     <Link to="/login" className="nav-link">Đăng nhập</Link>
+                     <Link to="/register" className="nav-link">Đăng ký</Link>
                   </>
                )}
 
                {/* User links (authenticated as USER) */}
                {isAuthenticated() && hasRole('USER') && (
                   <>
-                     <Link to="/my-trips" className="nav-link">My Trips</Link>
-                     <Link to="/trips/create" className="nav-link">Create Trip</Link>
-                     <Link to="/profile" className="nav-link">Profile</Link>
+                     <Link to="/my-trips" className="nav-link">Chuyến đi của tôi</Link>
+                     <Link to="/trips/create" className="nav-link">Tạo chuyến đi</Link>
+                     <Link to="/profile" className="nav-link">Hồ sơ</Link>
                   </>
                )}
 
                {/* Brand links (authenticated as BRAND) */}
                {isAuthenticated() && hasRole('BRAND') && (
                   <>
-                     <Link to="/brand" className="nav-link">My Ads</Link>
-                     <Link to="/profile" className="nav-link">Profile</Link>
+                     <Link to="/brand" className="nav-link">Quảng cáo của tôi</Link>
+                     <Link to="/profile" className="nav-link">Hồ sơ</Link>
                   </>
                )}
 
                {/* Admin links (authenticated as ADMIN) */}
                {isAuthenticated() && hasRole('ADMIN') && (
                   <div className="admin-dropdown">
-                     <span className="nav-link admin-toggle">Admin ▼</span>
+                     <span className="nav-link admin-toggle">Quản trị ▼</span>
                      <div className="admin-dropdown-content">
-                        <Link to="/admin/users" className="dropdown-link">Users</Link>
-                        <Link to="/admin/trips" className="dropdown-link">Trips</Link>
-                        <Link to="/admin/ads" className="dropdown-link">Ads</Link>
+                        <Link to="/admin/users" className="dropdown-link">Người dùng</Link>
+                        <Link to="/admin/trips" className="dropdown-link">Chuyến đi</Link>
+                        <Link to="/admin/ads" className="dropdown-link">Quảng cáo</Link>
                      </div>
                   </div>
                )}
@@ -120,7 +120,7 @@ const Navbar = () => {
                            }}
                            onMouseEnter={(e) => e.target.style.backgroundColor = '#f8f9fa'}
                            onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
-                           title="Notifications"
+                           title="Thông báo"
                         >
                            🔔
                            {totalUnread > 0 && (
@@ -188,7 +188,7 @@ const Navbar = () => {
                            </span>
                         </div>
                         <button onClick={handleLogout} className="logout-btn">
-                           Logout
+                           Đăng xuất
                         </button>
                      </div>
                   </>

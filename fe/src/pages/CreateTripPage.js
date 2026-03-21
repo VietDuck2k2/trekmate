@@ -59,9 +59,9 @@ const CreateTripPage = () => {
    const handleSubmit = async (e) => {
       e.preventDefault();
 
-      if (!formData.title.trim()) { setError('Trip title is required'); return; }
-      if (!formData.location.trim()) { setError('Location is required'); return; }
-      if (!formData.startDate) { setError('Start date is required'); return; }
+      if (!formData.title.trim()) { setError('Tiêu đề chuyến đi là bắt buộc'); return; }
+      if (!formData.location.trim()) { setError('Địa điểm là bắt buộc'); return; }
+      if (!formData.startDate) { setError('Ngày bắt đầu là bắt buộc'); return; }
 
       try {
          setLoading(true);
@@ -89,10 +89,10 @@ const CreateTripPage = () => {
          if (response && response.trip && response.trip._id) {
             navigate(`/trips/${response.trip._id}`);
          } else {
-            setError('Trip created but could not redirect to details page');
+            setError('Đã tạo chuyến đi nhưng không thể chuyển hướng đến trang chi tiết');
          }
       } catch (err) {
-         setError(err.message || 'Failed to create trip');
+         setError(err.message || 'Tạo chuyến đi thất bại');
       } finally {
          setLoading(false);
       }
@@ -103,20 +103,22 @@ const CreateTripPage = () => {
          <Layout>
             <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
                <span className="material-icons-round text-6xl text-slate-300 mb-4">lock</span>
-               <h1 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">Login Required</h1>
-               <p className="text-slate-500 mb-6">You need to be logged in to create a trip.</p>
-               <button onClick={() => navigate('/login')} className="px-6 py-3 bg-primary text-white rounded-xl font-bold hover:bg-emerald-700 transition">Login Now</button>
+               <h1 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">Yêu cầu đăng nhập</h1>
+               <p className="text-slate-500 mb-6">Bạn cần đăng nhập để tạo chuyến đi.</p>
+               <button onClick={() => navigate('/login')} className="px-6 py-3 bg-primary text-white rounded-xl font-bold hover:bg-emerald-700 transition">Đăng nhập ngay</button>
             </div>
          </Layout>
       );
    }
 
+   const difficultyLabels = { easy: "Dễ", moderate: "Vừa", hard: "Khó", extreme: "Cực khó" };
+
    return (
       <Layout>
          <div className="max-w-7xl mx-auto px-6 py-12 md:py-20 mt-12">
             <div className="mb-12">
-               <h1 className="text-4xl font-bold mb-2 text-slate-900 dark:text-white">Create New Trip</h1>
-               <p className="text-slate-500 dark:text-slate-400">Design your perfect trekking adventure and find the right companions.</p>
+               <h1 className="text-4xl font-bold mb-2 text-slate-900 dark:text-white">Tạo Chuyến Đi Mới</h1>
+               <p className="text-slate-500 dark:text-slate-400">Thiết kế chuyến thám hiểm trekking hoàn hảo của bạn và tìm những người bạn đồng hành phù hợp.</p>
             </div>
 
             {error && (
@@ -133,29 +135,29 @@ const CreateTripPage = () => {
                      <div className="bg-white dark:bg-slate-900/50 p-8 rounded-2xl shadow-sm space-y-6 border border-slate-100 dark:border-slate-800">
                         <div className="flex items-center gap-2 mb-2">
                            <span className="material-icons-round text-primary">info</span>
-                           <h2 className="text-xl font-bold text-slate-800 dark:text-white">General Information</h2>
+                           <h2 className="text-xl font-bold text-slate-800 dark:text-white">Thông Tin Chung</h2>
                         </div>
                         <div className="space-y-6">
                            <div className="group">
-                              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Trip Title *</label>
+                              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Tiêu Đề Chuyến Đi *</label>
                               <input
                                  name="title"
                                  value={formData.title}
                                  onChange={handleInputChange}
                                  className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary placeholder-slate-300 dark:placeholder-slate-600 dark:text-white transition-all"
-                                 placeholder="e.g., Everest Base Camp Trek"
+                                 placeholder="VD: Trekking Sơn Đoòng"
                                  type="text"
                                  required
                               />
                            </div>
                            <div className="group">
-                              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Description</label>
+                              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Mô Tả</label>
                               <textarea
                                  name="description"
                                  value={formData.description}
                                  onChange={handleInputChange}
                                  className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary placeholder-slate-300 dark:placeholder-slate-600 dark:text-white transition-all resize-y min-h-[120px]"
-                                 placeholder="Describe your trip, what to expect, highlights, etc."
+                                 placeholder="Mô tả chuyến đi của bạn, những gì mong đợi, điểm nổi bật, v.v."
                                  rows={4}
                               ></textarea>
                            </div>
@@ -166,12 +168,12 @@ const CreateTripPage = () => {
                      <div className="bg-white dark:bg-slate-900/50 p-8 rounded-2xl shadow-sm space-y-8 border border-slate-100 dark:border-slate-800">
                         <div className="flex items-center gap-2">
                            <span className="material-icons-round text-primary">explore</span>
-                           <h2 className="text-xl font-bold text-slate-800 dark:text-white">Logistics & Details</h2>
+                           <h2 className="text-xl font-bold text-slate-800 dark:text-white">Logistics & Chi Tiết</h2>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                            {/* Location */}
                            <div>
-                              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Location *</label>
+                              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Địa Điểm *</label>
                               <div className="relative">
                                  <span className="material-icons-round absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">place</span>
                                  <input
@@ -179,14 +181,14 @@ const CreateTripPage = () => {
                                     value={formData.location}
                                     onChange={handleInputChange}
                                     className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl pl-10 pr-4 py-3 focus:ring-2 focus:ring-primary dark:text-white transition-all"
-                                    placeholder="Himalayas, Nepal"
+                                    placeholder="Sơn Đoòng, Việt Nam"
                                     type="text"
                                     required
                                  />
                               </div>
                               {isLoaded && (
                                  <div className="mt-4">
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 px-1">Or pick on map</p>
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 px-1">Hoặc chọn trên bản đồ</p>
                                     <GoogleMap
                                        mapContainerStyle={mapContainerStyle}
                                        center={formData.locationCoords || defaultCenter}
@@ -201,7 +203,7 @@ const CreateTripPage = () => {
 
                            {/* Difficulty */}
                            <div>
-                              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Difficulty Level</label>
+                              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Mức Độ Khó</label>
                               <div className="relative">
                                  <span className="material-icons-round absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">leaderboard</span>
                                  <select
@@ -210,10 +212,10 @@ const CreateTripPage = () => {
                                     onChange={handleInputChange}
                                     className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl pl-10 pr-4 py-3 focus:ring-2 focus:ring-primary dark:text-white transition-all appearance-none"
                                  >
-                                    <option value="easy">Easy</option>
-                                    <option value="moderate">Moderate</option>
-                                    <option value="hard">Hard</option>
-                                    <option value="extreme">Extreme</option>
+                                    <option value="easy">Dễ</option>
+                                    <option value="moderate">Vừa</option>
+                                    <option value="hard">Khó</option>
+                                    <option value="extreme">Cực khó</option>
                                  </select>
                                  <span className="material-icons-round absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">expand_more</span>
                               </div>
@@ -221,7 +223,7 @@ const CreateTripPage = () => {
 
                            {/* Start Date */}
                            <div>
-                              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Start Date *</label>
+                              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Ngày Bắt Đầu *</label>
                               <div className="relative">
                                  <span className="material-icons-round absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">calendar_today</span>
                                  <input
@@ -238,7 +240,7 @@ const CreateTripPage = () => {
 
                            {/* End Date */}
                            <div>
-                              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">End Date</label>
+                              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Ngày Kết Thúc</label>
                               <div className="relative">
                                  <span className="material-icons-round absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">event</span>
                                  <input
@@ -254,7 +256,7 @@ const CreateTripPage = () => {
 
                            {/* Max Participants */}
                            <div>
-                              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Max Participants</label>
+                              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Số Người Tham Gia Tối Đa</label>
                               <div className="relative">
                                  <span className="material-icons-round absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">group</span>
                                  <input
@@ -271,7 +273,7 @@ const CreateTripPage = () => {
 
                            {/* Cost */}
                            <div>
-                              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Cost Per Person</label>
+                              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Chi Phí Mỗi Người</label>
                               <div className="relative">
                                  <span className="material-icons-round absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">payments</span>
                                  <input
@@ -289,7 +291,7 @@ const CreateTripPage = () => {
 
                            {/* Meeting Point */}
                            <div className="md:col-span-2">
-                              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Meeting Point</label>
+                              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Điểm Hẹn</label>
                               <div className="relative">
                                  <span className="material-icons-round absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">near_me</span>
                                  <input
@@ -297,13 +299,13 @@ const CreateTripPage = () => {
                                     value={formData.meetingPoint}
                                     onChange={handleInputChange}
                                     className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl pl-10 pr-4 py-3 focus:ring-2 focus:ring-primary dark:text-white transition-all"
-                                    placeholder="Where will the group meet?"
+                                    placeholder="Nhóm sẽ gặp nhau ở đâu?"
                                     type="text"
                                  />
                               </div>
                               {isLoaded && (
                                  <div className="mt-4">
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 px-1">Or pick on map</p>
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 px-1">Hoặc chọn trên bản đồ</p>
                                     <GoogleMap
                                        mapContainerStyle={mapContainerStyle}
                                        center={formData.meetingPointCoords || formData.locationCoords || defaultCenter}
@@ -323,13 +325,13 @@ const CreateTripPage = () => {
 
                            {/* Requirements */}
                            <div className="md:col-span-2">
-                              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Requirements & Gear</label>
+                              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Yêu Cầu & Trang Bị</label>
                               <textarea
                                  name="requirements"
                                  value={formData.requirements}
                                  onChange={handleInputChange}
                                  className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary dark:text-white transition-all resize-y min-h-[100px]"
-                                 placeholder="List any equipment, fitness level, or preparation needed..."
+                                 placeholder="Liệt kê bất kỳ thiết bị, mức độ thể lực hoặc sự chuẩn bị nào cần thiết..."
                                  rows={3}
                               ></textarea>
                            </div>
@@ -340,12 +342,12 @@ const CreateTripPage = () => {
                      <div className="bg-white dark:bg-slate-900/50 p-8 rounded-2xl shadow-sm space-y-6 border border-slate-100 dark:border-slate-800">
                         <div className="flex items-center gap-2 mb-2">
                            <span className="material-icons-round text-primary">image</span>
-                           <h2 className="text-xl font-bold text-slate-800 dark:text-white">Photos</h2>
+                           <h2 className="text-xl font-bold text-slate-800 dark:text-white">Hình Ảnh</h2>
                         </div>
 
                         <div className="space-y-4">
                            <div>
-                              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Cover Image URL</label>
+                              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">URL Ảnh Bìa</label>
                               <input
                                  name="coverImageUrl"
                                  value={formData.coverImageUrl}
@@ -357,7 +359,7 @@ const CreateTripPage = () => {
                            </div>
 
                            <div>
-                              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Additional Gallery Photos (Max 3)</label>
+                              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Ảnh Thư Viện Bổ Sung (Tối Đa 3)</label>
                               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                  {formData.photos.map((photo, index) => (
                                     <input
@@ -365,7 +367,7 @@ const CreateTripPage = () => {
                                        value={photo}
                                        onChange={(e) => handlePhotoChange(index, e.target.value)}
                                        className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary dark:text-white transition-all text-sm"
-                                       placeholder={`Photo ${index + 1} URL`}
+                                       placeholder={`URL Ảnh ${index + 1}`}
                                        type="url"
                                     />
                                  ))}
@@ -379,8 +381,8 @@ const CreateTripPage = () => {
                   <div className="lg:col-span-5">
                      <div className="sticky top-32">
                         <div className="flex items-center justify-between mb-4 px-2">
-                           <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest">Live Preview</h3>
-                           <span className="text-xs px-2 py-1 bg-primary/10 text-primary rounded-full font-bold">Draft</span>
+                           <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest">Xem Trước</h3>
+                           <span className="text-xs px-2 py-1 bg-primary/10 text-primary rounded-full font-bold">Bản Nháp</span>
                         </div>
                         <div className="bg-white dark:bg-slate-900 rounded-3xl overflow-hidden shadow-2xl border border-white dark:border-slate-800">
                            <div className="relative h-64 bg-slate-200 dark:bg-slate-800 group">
@@ -392,35 +394,35 @@ const CreateTripPage = () => {
                               />
                               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
                               <div className="absolute bottom-6 left-6 right-6 text-white">
-                                 <span className="bg-primary/90 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">Organizer</span>
-                                 <h4 className="text-2xl font-bold mt-2 leading-tight drop-shadow-md">{formData.title || 'Your Trek Title Here'}</h4>
+                                 <span className="bg-primary/90 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">Người Tổ Chức</span>
+                                 <h4 className="text-2xl font-bold mt-2 leading-tight drop-shadow-md">{formData.title || 'Tiêu Đề Chuyến Đi Của Bạn'}</h4>
                                  <div className="flex items-center gap-2 mt-2 text-sm text-white/90">
                                     <span className="material-icons-round text-sm">place</span>
-                                    {formData.location || 'Location'}
+                                    {formData.location || 'Địa điểm'}
                                  </div>
                               </div>
                            </div>
                            <div className="p-6 space-y-6">
                               <div className="flex gap-2">
-                                 <span className="px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded-lg text-xs font-bold uppercase text-slate-500">{formData.difficulty}</span>
+                                 <span className="px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded-lg text-xs font-bold uppercase text-slate-500">{difficultyLabels[formData.difficulty] || formData.difficulty}</span>
                                  {formData.costPerPerson && <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 rounded-lg text-xs font-bold uppercase text-green-600">{Number(formData.costPerPerson).toLocaleString('vi-VN')} VNĐ</span>}
                               </div>
                               <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed line-clamp-3 min-h-[3rem]">
-                                 {formData.description || 'Start typing your description to see it appear here. Share what makes this trek special...'}
+                                 {formData.description || 'Bắt đầu nhập mô tả của bạn để thấy nó xuất hiện ở đây. Hãy chia sẻ những điều làm cho chuyến đi này trở nên đặc biệt...'}
                               </p>
                               <div className="pt-6 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
                                  <div className="flex items-center gap-3">
                                     <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-xs font-bold shadow-sm">
-                                       {user?.displayName?.[0] || 'U'}
+                                       {user?.displayName?.[0] || 'B'}
                                     </div>
                                     <div className="text-xs">
-                                       <p className="font-bold text-slate-800 dark:text-white">{user?.displayName || 'You'}</p>
-                                       <p className="text-slate-400">Organizer</p>
+                                       <p className="font-bold text-slate-800 dark:text-white">{user?.displayName || 'Bạn'}</p>
+                                       <p className="text-slate-400">Người Tổ Chức</p>
                                     </div>
                                  </div>
                                  <div className="text-right">
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase">Starts</p>
-                                    <p className="text-sm font-bold text-primary">{formData.startDate ? new Date(formData.startDate).toLocaleDateString() : 'TBD'}</p>
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase">Bắt Đầu</p>
+                                    <p className="text-sm font-bold text-primary">{formData.startDate ? new Date(formData.startDate).toLocaleDateString() : 'Sắp tới'}</p>
                                  </div>
                               </div>
                            </div>
@@ -433,7 +435,7 @@ const CreateTripPage = () => {
                               onClick={() => navigate('/')}
                               className="px-6 py-4 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-2xl font-bold transition-all"
                            >
-                              Cancel
+                              Hủy
                            </button>
                            <button
                               type="submit"
@@ -441,7 +443,7 @@ const CreateTripPage = () => {
                               className="px-8 py-4 bg-primary hover:bg-emerald-700 text-white rounded-2xl font-bold shadow-xl shadow-primary/20 transition-all transform hover:scale-105 active:scale-95 flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                            >
                               <span className="material-icons-round">rocket_launch</span>
-                              {loading ? 'Creating...' : 'Create Trip'}
+                              {loading ? 'Đang tạo...' : 'Tạo Chuyến Đi'}
                            </button>
                         </div>
                      </div>

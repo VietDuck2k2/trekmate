@@ -12,7 +12,7 @@ const ProtectedRoute = ({ children, requiredRole = null, allowedRoles = null }) 
       return (
          <div className="page-container">
             <div style={{ textAlign: 'center', padding: '50px' }}>
-               <h2>Loading...</h2>
+               <h2>Đang tải...</h2>
             </div>
          </div>
       );
@@ -28,9 +28,9 @@ const ProtectedRoute = ({ children, requiredRole = null, allowedRoles = null }) 
       return (
          <div className="page-container">
             <div style={{ textAlign: 'center', padding: '50px' }}>
-               <h2>Access Denied</h2>
-               <p>You don't have permission to access this page.</p>
-               <p>Required role: {requiredRole}</p>
+               <h2>Từ Chối Quyền Truy Cập</h2>
+               <p>Bạn không có quyền truy cập trang này.</p>
+               <p>Vai trò bắt buộc: {requiredRole}</p>
             </div>
          </div>
       );
@@ -41,9 +41,9 @@ const ProtectedRoute = ({ children, requiredRole = null, allowedRoles = null }) 
       return (
          <div className="page-container">
             <div style={{ textAlign: 'center', padding: '50px' }}>
-               <h2>Access Denied</h2>
-               <p>You don't have permission to access this page.</p>
-               <p>Required roles: {allowedRoles.join(', ')}</p>
+               <h2>Từ Chối Quyền Truy Cập</h2>
+               <p>Bạn không có quyền truy cập trang này.</p>
+               <p>Các vai trò bắt buộc: {allowedRoles.join(', ')}</p>
             </div>
          </div>
       );
@@ -61,7 +61,7 @@ const PublicRoute = ({ children }) => {
       return (
          <div className="page-container">
             <div style={{ textAlign: 'center', padding: '50px' }}>
-               <h2>Loading...</h2>
+               <h2>Đang tải...</h2>
             </div>
          </div>
       );

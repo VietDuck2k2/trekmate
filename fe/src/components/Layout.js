@@ -66,28 +66,28 @@ const Layout = ({ children, transparentNav = false }) => {
                <div className="hidden md:flex items-center gap-2 font-medium">
                   <Link to="/" className={getNavLinkClass('/')}>
                      <span className="material-icons-outlined text-[18px]">explore</span>
-                     Trips
+                     Chuyến đi
                   </Link>
                   <Link to="/ads" className={getNavLinkClass('/ads')}>
                      <span className="material-icons-outlined text-[18px]">campaign</span>
-                     Ads
+                     Quảng cáo
                   </Link>
                   {isAuthenticated() && (hasRole('USER') || hasRole('ADMIN')) && (
                      <Link to="/my-trips" className={getNavLinkClass('/my-trips')}>
                         <span className="material-icons-outlined text-[18px]">backpack</span>
-                        My Trips
+                        Chuyến đi của tôi
                      </Link>
                   )}
                   {isAuthenticated() && (hasRole('BRAND') || hasRole('ADMIN')) && (
                      <Link to="/brand" className={getNavLinkClass('/brand')}>
                         <span className="material-icons-outlined text-[18px]">campaign</span>
-                        My Ads
+                        Quảng cáo của tôi
                      </Link>
                   )}
                   {isAuthenticated() && (
                      <Link to="/profile" className={getNavLinkClass('/profile')}>
                         <span className="material-icons-outlined text-[18px]">person</span>
-                        Profile
+                        Hồ sơ
                      </Link>
                   )}
                   <div className="mx-2 h-6 w-px bg-slate-200 dark:bg-slate-700"></div>
@@ -95,12 +95,12 @@ const Layout = ({ children, transparentNav = false }) => {
                      hasRole('BRAND') ? (
                         <Link to="/brand/ads/create" className={`px-5 py-2.5 rounded-full font-bold text-sm transition-all shadow-lg hover:shadow-primary/25 flex items-center gap-2 ${transparentNav && !scrolled ? 'bg-white/20 hover:bg-white/30 text-white' : 'bg-primary text-white hover:bg-emerald-700'}`}>
                            <span className="material-icons-outlined text-[18px]">add_circle</span>
-                           Create Ad
+                           Tạo quảng cáo
                         </Link>
                      ) : (
                         <Link to="/trips/create" className={`px-5 py-2.5 rounded-full font-bold text-sm transition-all shadow-lg hover:shadow-primary/25 flex items-center gap-2 ${transparentNav && !scrolled ? 'bg-white/20 hover:bg-white/30 text-white' : 'bg-primary text-white hover:bg-emerald-700'}`}>
                            <span className="material-icons-outlined text-[18px]">add_circle</span>
-                           Create Trip
+                           Tạo chuyến đi
                         </Link>
                      )
                   )}
@@ -109,15 +109,15 @@ const Layout = ({ children, transparentNav = false }) => {
                      <div className="flex items-center gap-2 pl-4 ml-2 border-l border-slate-300 dark:border-slate-700">
                         <Link to="/admin/users" className={getNavLinkClass('/admin/users')}>
                            <span className="material-icons-outlined text-[18px]">manage_accounts</span>
-                           Users
+                           Người dùng
                         </Link>
                         <Link to="/admin/trips" className={getNavLinkClass('/admin/trips')}>
                            <span className="material-icons-outlined text-[18px]">flight_takeoff</span>
-                           Trips
+                           Chuyến đi
                         </Link>
                         <Link to="/admin/ads" className={getNavLinkClass('/admin/ads')}>
                            <span className="material-icons-outlined text-[18px]">stars</span>
-                           Ads
+                           Quảng cáo
                         </Link>
                      </div>
                   )}
@@ -160,14 +160,14 @@ const Layout = ({ children, transparentNav = false }) => {
                            <span className={`hidden lg:inline font-semibold ${transparentNav && !scrolled ? 'text-white' : 'text-slate-800 dark:text-white'}`}>
                               {user?.displayName || 'User'}
                            </span>
-                           <button onClick={handleLogout} className="hover:text-red-400 transition-colors ml-2">
+                           <button onClick={handleLogout} className="hover:text-red-400 transition-colors ml-2" title="Đăng xuất">
                               <span className="material-icons-outlined">logout</span>
                            </button>
                         </>
                      ) : (
                         <>
-                           <Link to="/login" className={`font-semibold hover:underline ${transparentNav && !scrolled ? 'text-white' : 'text-slate-800 dark:text-white'}`}>Login</Link>
-                           <Link to="/register" className={`px-4 py-2 rounded-full font-bold ml-2 ${transparentNav && !scrolled ? 'bg-white text-primary' : 'bg-primary text-white'}`}>Register</Link>
+                           <Link to="/login" className={`font-semibold hover:underline ${transparentNav && !scrolled ? 'text-white' : 'text-slate-800 dark:text-white'}`}>Đăng nhập</Link>
+                           <Link to="/register" className={`px-4 py-2 rounded-full font-bold ml-2 ${transparentNav && !scrolled ? 'bg-white text-primary' : 'bg-primary text-white'}`}>Đăng ký</Link>
                         </>
                      )}
                   </div>
@@ -184,13 +184,13 @@ const Layout = ({ children, transparentNav = false }) => {
                   <span className="text-xl font-bold font-display tracking-tight">TrekMate</span>
                </div>
                <div className="flex gap-8 text-sm text-slate-500 dark:text-slate-400 font-medium">
-                  <a href="#" className="hover:text-primary">About</a>
-                  <a href="#" className="hover:text-primary">Terms</a>
-                  <a href="#" className="hover:text-primary">Privacy</a>
-                  <a href="#" className="hover:text-primary">Help</a>
+                  <a href="#" className="hover:text-primary">Về chúng tôi</a>
+                  <a href="#" className="hover:text-primary">Điều khoản</a>
+                  <a href="#" className="hover:text-primary">Bảo mật</a>
+                  <a href="#" className="hover:text-primary">Trợ giúp</a>
                </div>
                <p className="text-xs text-slate-400 dark:text-slate-500">
-                  © 2026 TrekMate. Nature awaits.
+                  © 2026 TrekMate. Thiên nhiên vẫy gọi.
                </p>
             </div>
          </footer>

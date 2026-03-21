@@ -126,7 +126,7 @@ function App() {
               } />
 
               {/* 404 fallback */}
-              <Route path="*" element={<div className="page-container"><h1>Page Not Found</h1><p>The page you're looking for doesn't exist.</p></div>} />
+              <Route path="*" element={<div className="page-container"><h1>Không Tìm Thấy Trang</h1><p>Trang bạn đang tìm kiếm không tồn tại.</p></div>} />
             </Routes>
           </Router>
         </ChatProvider>

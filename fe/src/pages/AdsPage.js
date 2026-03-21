@@ -33,7 +33,7 @@ const AdsPage = () => {
          setFilteredAds(adsData);
       } catch (err) {
          console.error('Error loading ads:', err);
-         setError(err.message || 'Failed to load advertisements');
+         setError(err.message || 'Không thể tải quảng cáo');
          setFilteredAds([]);
       } finally {
          setLoading(false);
@@ -48,13 +48,13 @@ const AdsPage = () => {
                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                   <div>
                      <div className="flex items-center gap-2 mb-4">
-                        <span className="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full uppercase tracking-widest">Premium Partners</span>
+                        <span className="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full uppercase tracking-widest">Đối Tác Cao Cấp</span>
                      </div>
                      <h1 className="text-5xl md:text-6xl font-extrabold text-slate-900 dark:text-white mb-4 leading-tight font-outfit">
-                        Discover Gear <br /><span className="text-primary">&amp; Services</span>
+                        Khám Phá Trang Bị <br /><span className="text-primary">&amp; Dịch Vụ</span>
                      </h1>
                      <p className="text-lg text-slate-600 dark:text-slate-400 max-w-xl">
-                        Handpicked recommendations from our trusted brand partners to elevate your next adventure.
+                        Những đề xuất được tuyển chọn kỹ lưỡng từ các đối tác thương hiệu đáng tin cậy của chúng tôi để nâng tầm chuyến thám hiểm tiếp theo của bạn.
                      </p>
                   </div>
 
@@ -64,7 +64,7 @@ const AdsPage = () => {
                         className="bg-primary hover:bg-emerald-700 text-white px-8 py-4 rounded-2xl font-bold shadow-xl shadow-primary/20 transition-all flex items-center gap-3 scale-100 hover:scale-105"
                      >
                         <span className="material-icons-round">add_circle</span>
-                        Create New Ad
+                        Tạo Quảng Cáo Mới
                      </button>
                   )}
                </div>
@@ -80,7 +80,7 @@ const AdsPage = () => {
                   </div>
                   <input
                      className="flex-grow bg-transparent border-none focus:ring-0 text-slate-700 dark:text-slate-200 py-4 placeholder:text-slate-400"
-                     placeholder="Search ads by title, description, or brand..."
+                     placeholder="Tìm kiếm quảng cáo theo tiêu đề, mô tả, hoặc thương hiệu..."
                      type="text"
                      value={searchTerm}
                      onChange={(e) => setSearchTerm(e.target.value)}
@@ -94,7 +94,7 @@ const AdsPage = () => {
                      </button>
                   )}
                   <button className="bg-primary text-white px-8 py-3 rounded-xl font-bold hover:bg-emerald-800 transition-colors shadow-lg flex items-center gap-2">
-                     Filter
+                     Lọc
                      <span className="material-icons-round text-sm">tune</span>
                   </button>
                </div>
@@ -103,10 +103,10 @@ const AdsPage = () => {
             {/* Category Tabs */}
             <div className="flex flex-wrap justify-center gap-4 mb-12">
                {[
-                  { id: 'ALL', label: 'All', icon: 'grid_view' },
-                  { id: 'EAT', label: 'Dining', icon: 'restaurant' },
-                  { id: 'STAY', label: 'Accommodation', icon: 'hotel' },
-                  { id: 'PLAY', label: 'Attractions', icon: 'attractions' }
+                  { id: 'ALL', label: 'Tất Cả', icon: 'grid_view' },
+                  { id: 'EAT', label: 'Ăn Uống', icon: 'restaurant' },
+                  { id: 'STAY', label: 'Lưu Trú', icon: 'hotel' },
+                  { id: 'PLAY', label: 'Điểm Tham Quan', icon: 'attractions' }
                ].map((cat) => (
                   <button
                      key={cat.id}
@@ -129,7 +129,7 @@ const AdsPage = () => {
             ) : error ? (
                <div className="text-center py-20">
                   <div className="text-red-500 mb-4 text-xl font-bold">{error}</div>
-                  <button onClick={loadAds} className="px-6 py-2 bg-primary text-white rounded-lg">Try Again</button>
+                  <button onClick={loadAds} className="px-6 py-2 bg-primary text-white rounded-lg">Thử Lại</button>
                </div>
             ) : (
                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -142,17 +142,17 @@ const AdsPage = () => {
                      <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
                      <div className="relative z-10">
                         <span className="material-icons-round text-6xl mb-4">{hasRole('BRAND') ? 'campaign' : 'handshake'}</span>
-                        <h3 className="text-2xl font-bold mb-4">{hasRole('BRAND') ? 'Promote Your Brand' : 'Become a Brand Partner'}</h3>
+                        <h3 className="text-2xl font-bold mb-4">{hasRole('BRAND') ? 'Quảng Bá Thương Hiệu Của Bạn' : 'Trở Thành Đối Tác Thương Hiệu'}</h3>
                         <p className="text-emerald-100 mb-8 text-sm opacity-90 leading-relaxed">
                            {hasRole('BRAND')
-                              ? 'Reach thousands of travelers by creating more advertisements for your gear and services.'
-                              : 'Join our network and showcase your services to a community of passionate travelers and adventurers.'}
+                              ? 'Tiếp cận hàng ngàn du khách bằng cách tạo thêm quảng cáo cho trang bị và dịch vụ của bạn.'
+                              : 'Tham gia mạng lưới của chúng tôi và giới thiệu dịch vụ của bạn đến một cộng đồng những người đam mê du lịch và thám hiểm.'}
                         </p>
                         <button
                            onClick={() => navigate(hasRole('BRAND') ? '/brand/ads/create' : '/register?role=BRAND')}
                            className="bg-white text-primary px-8 py-3 rounded-xl font-bold hover:bg-emerald-50 transition-colors shadow-lg"
                         >
-                           {hasRole('BRAND') ? 'Create Ad Now' : 'Contact Us Today'}
+                           {hasRole('BRAND') ? 'Tạo Quảng Cáo Ngay' : 'Liên Hệ Ngay Hôm Nay'}
                         </button>
                      </div>
                   </div>
@@ -162,7 +162,7 @@ const AdsPage = () => {
             {!loading && !error && filteredAds.length === 0 && (
                <div className="text-center py-20 text-slate-500">
                   <span className="material-icons-round text-6xl mb-4 text-slate-300">search_off</span>
-                  <p className="text-xl">No ads match your search.</p>
+                  <p className="text-xl">Không có quảng cáo nào khớp với tìm kiếm của bạn.</p>
                </div>
             )}
          </main>
@@ -215,7 +215,7 @@ const AdCard = ({ ad }) => {
                onClick={handleActionClick}
                className="inline-flex items-center justify-center w-full py-3 border-2 border-primary text-primary font-bold rounded-xl hover:bg-primary hover:text-white transition-all duration-300 group/btn mt-auto"
             >
-               Learn More
+               Tìm Hiểu Thêm
                <span className="material-icons-round ml-2 text-sm group-hover/btn:translate-x-1 transition-transform">arrow_forward</span>
             </button>
          </div>

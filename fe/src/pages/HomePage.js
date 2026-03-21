@@ -7,6 +7,13 @@ import { useDebounce } from '../hooks/useDebounce';
 import Layout from '../components/Layout';
 import TrekCard from '../components/TrekCard';
 
+const difficultyLabels = {
+   easy: 'Dễ',
+   moderate: 'Vừa',
+   hard: 'Khó',
+   extreme: 'Cực khó'
+};
+
 const HomePage = () => {
    const [trips, setTrips] = useState([]);
    const [filters, setFilters] = useState({
@@ -45,18 +52,6 @@ const HomePage = () => {
             status: filters.status
          };
 
-         // Apply logic for tabs if no specific dates are set (or combining them)
-         // For simplification, let's assume the Tab drives a basic date filter if the user hasn't set custom ranges
-         // OR, we can filter client-side if the API doesn't support complex "Upcoming vs Ongoing" easily without Date params.
-         // Let's rely on API date filters, but pre-fill or adjust based on Tab? 
-         // ACTUALLY, sticking to the MyTrips pattern: Fetch ALL (filtered by search/loc) then client-side categorize is safest for "grouping",
-         // BUT for a public homepage with potential pagination, server-side is better.
-         // However, existing tripsAPI.getTrips takes filters.
-         // Let's implement Client-Side categorization for the "Tabs" to be consistent with MyTrips visually,
-         // but use the API for the hard filters (Location, Difficulty).
-         // Wait, if we have thousands of trips, client side is bad.
-         // Let's add specific params for the tabs to the API call if needed, or just standard "dateFrom = now" for upcoming.
-
          // ADJUSTMENT: Map Tabs to Date Filters implicitely
          const now = new Date().toISOString();
          if (activeTab === 'upcoming' && !filters.dateFrom) {
@@ -93,7 +88,7 @@ const HomePage = () => {
 
          setTrips(fetchedTrips);
       } catch (err) {
-         setError(err.message || 'Failed to load trips');
+         setError(err.message || 'Không thể tải danh sách chuyến đi');
          setTrips([]);
       } finally {
          setLoading(false);
@@ -117,9 +112,9 @@ const HomePage = () => {
    };
 
    const tabs = [
-      { id: 'upcoming', label: 'Upcoming', icon: 'calendar_today', color: 'text-blue-600', bg: 'bg-blue-100 dark:bg-blue-900/30' },
-      { id: 'ongoing', label: 'Happening Now', icon: 'rocket_launch', color: 'text-orange-600', bg: 'bg-orange-100 dark:bg-orange-900/30' },
-      { id: 'past', label: 'Past Trips', icon: 'history', color: 'text-slate-500', bg: 'bg-slate-100 dark:bg-zinc-800' }
+      { id: 'upcoming', label: 'Sắp diễn ra', icon: 'calendar_today', color: 'text-blue-600', bg: 'bg-blue-100 dark:bg-blue-900/30' },
+      { id: 'ongoing', label: 'Đang diễn ra', icon: 'rocket_launch', color: 'text-orange-600', bg: 'bg-orange-100 dark:bg-orange-900/30' },
+      { id: 'past', label: 'Đã kết thúc', icon: 'history', color: 'text-slate-500', bg: 'bg-slate-100 dark:bg-zinc-800' }
    ];
 
    return (
@@ -134,13 +129,13 @@ const HomePage = () => {
             <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-slate-50/90 dark:to-slate-900/90"></div>
             <div className="relative h-full flex flex-col items-center justify-center text-center px-4 pt-10">
                <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-4 font-display tracking-tight">
-                  Explore the <span className="text-emerald-400">Journeys Ahead</span>
+                  Khám phá <span className="text-emerald-400">Những Hành Trình</span>
                </h1>
                <div className="w-full max-w-xl relative">
                   <input
                      type="text"
                      className="w-full pl-6 pr-14 py-4 rounded-full bg-white/90 backdrop-blur-sm text-slate-800 placeholder:text-slate-400 font-medium shadow-2xl focus:ring-4 focus:ring-primary/20 outline-none transition-all"
-                     placeholder="Search for a trip..."
+                     placeholder="Tìm kiếm chuyến đi..."
                      value={filters.search}
                      onChange={(e) => handleFilterChange('search', e.target.value)}
                   />
@@ -159,7 +154,7 @@ const HomePage = () => {
 
                   {/* Category Tabs */}
                   <div className="bg-white dark:bg-zinc-900 rounded-3xl p-4 shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-zinc-800">
-                     <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 px-2">Categories</h3>
+                     <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 px-2">Danh mục</h3>
                      <div className="flex flex-col gap-2">
                         {tabs.map(tab => (
                            <button
@@ -180,20 +175,20 @@ const HomePage = () => {
                   {/* Filter Panel */}
                   <div className="bg-white dark:bg-zinc-900 rounded-3xl p-6 shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-zinc-800">
                      <div className="flex items-center justify-between mb-6">
-                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Filters</h3>
-                        <button onClick={clearFilters} className="text-xs font-bold text-primary hover:underline">Clear</button>
+                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Bộ lọc</h3>
+                        <button onClick={clearFilters} className="text-xs font-bold text-primary hover:underline">Xóa</button>
                      </div>
 
                      <div className="space-y-6">
                         {/* Location */}
                         <div>
-                           <label className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 block">Location</label>
+                           <label className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 block">Địa điểm</label>
                            <div className="relative">
                               <span className="material-icons-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">location_on</span>
                               <input
                                  type="text"
                                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-zinc-800 rounded-xl text-sm font-medium text-slate-700 dark:text-white border-2 border-transparent focus:border-primary/20 outline-none transition-all placeholder:text-slate-400"
-                                 placeholder="Where to?"
+                                 placeholder="Bạn muốn đi đâu?"
                                  value={filters.location}
                                  onChange={(e) => handleFilterChange('location', e.target.value)}
                               />
@@ -202,7 +197,7 @@ const HomePage = () => {
 
                         {/* Date Range */}
                         <div>
-                           <label className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 block">Date Range</label>
+                           <label className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 block">Khoảng thời gian</label>
                            <div className="grid grid-cols-2 gap-2">
                               <div className="relative">
                                  <input
@@ -225,7 +220,7 @@ const HomePage = () => {
 
                         {/* Difficulty */}
                         <div>
-                           <label className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 block">Difficulty</label>
+                           <label className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 block">Độ khó</label>
                            <div className="space-y-2">
                               {['easy', 'moderate', 'hard', 'extreme'].map(level => (
                                  <label key={level} className="flex items-center gap-3 cursor-pointer group">
@@ -239,7 +234,7 @@ const HomePage = () => {
                                        checked={filters.difficulty === level}
                                        onChange={() => handleFilterChange('difficulty', level)}
                                     />
-                                    <span className="text-sm font-medium text-slate-600 dark:text-slate-400 capitalize group-hover:text-primary transition-colors">{level}</span>
+                                    <span className="text-sm font-medium text-slate-600 dark:text-slate-400 capitalize group-hover:text-primary transition-colors">{difficultyLabels[level]}</span>
                                  </label>
                               ))}
                            </div>
@@ -252,12 +247,12 @@ const HomePage = () => {
                <div className="flex-1">
                   <div className="flex items-center justify-between mb-8">
                      <h2 className="text-3xl font-bold dark:text-white">
-                        {activeTab === 'upcoming' && 'Upcoming Adventures'}
-                        {activeTab === 'ongoing' && 'Happening Now'}
-                        {activeTab === 'past' && 'Past Trips'}
+                        {activeTab === 'upcoming' && 'Hành trình sắp tới'}
+                        {activeTab === 'ongoing' && 'Đang diễn ra'}
+                        {activeTab === 'past' && 'Chuyến đi đã kết thúc'}
                      </h2>
                      <span className="px-3 py-1 bg-white dark:bg-zinc-900 rounded-full text-sm font-bold text-slate-500 shadow-sm border border-slate-100 dark:border-zinc-800">
-                        {trips.length} results
+                        {trips.length} kết quả
                      </span>
                   </div>
 
@@ -270,7 +265,7 @@ const HomePage = () => {
                         <div className="col-span-full text-red-500 text-center py-12 bg-red-50 rounded-3xl">
                            <span className="material-icons-round text-3xl mb-2">error_outline</span>
                            <p className="font-bold">{error}</p>
-                           <button onClick={loadTrips} className="text-primary underline mt-2">Retry</button>
+                           <button onClick={loadTrips} className="text-primary underline mt-2">Thử lại</button>
                         </div>
                      ) : trips.length > 0 ? (
                         trips.map(trip => (
@@ -281,10 +276,10 @@ const HomePage = () => {
                            <div className="w-24 h-24 bg-slate-100 dark:bg-zinc-900 rounded-full flex items-center justify-center mx-auto mb-6">
                               <span className="material-icons-round text-4xl text-slate-300">search_off</span>
                            </div>
-                           <h3 className="text-xl font-bold dark:text-white mb-2">No trips found</h3>
-                           <p className="text-slate-500 mb-6">Try adjusting your filters or category.</p>
+                           <h3 className="text-xl font-bold dark:text-white mb-2">Không tìm thấy chuyến đi nào</h3>
+                           <p className="text-slate-500 mb-6">Hãy thử điều chỉnh bộ lọc hoặc danh mục của bạn.</p>
                            <button onClick={clearFilters} className="px-6 py-2 bg-slate-200 dark:bg-zinc-800 rounded-xl font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-300 transition-colors">
-                              Clear all filters
+                              Xóa bộ lọc
                            </button>
                         </div>
                      )}

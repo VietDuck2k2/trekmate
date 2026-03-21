@@ -19,7 +19,7 @@ const AdminUsersPage = () => {
          const data = await adminAPI.getUsers();
          setUsers(data);
       } catch (err) {
-         setError(err.message || 'Failed to load users');
+         setError(err.message || 'Không thể tải người dùng');
       } finally {
          setLoading(false);
       }
@@ -31,7 +31,7 @@ const AdminUsersPage = () => {
          await adminAPI.blockUser(userId);
          loadUsers();
       } catch (err) {
-         alert('Failed to block user: ' + err.message);
+         alert('Lỗi khi khóa người dùng: ' + err.message);
       } finally {
          setActionLoading(prev => ({ ...prev, [userId]: null }));
       }
@@ -43,7 +43,7 @@ const AdminUsersPage = () => {
          await adminAPI.unblockUser(userId);
          loadUsers();
       } catch (err) {
-         alert('Failed to unblock user: ' + err.message);
+         alert('Lỗi khi mở khóa người dùng: ' + err.message);
       } finally {
          setActionLoading(prev => ({ ...prev, [userId]: null }));
       }
@@ -71,15 +71,15 @@ const AdminUsersPage = () => {
          <div className="max-w-7xl mx-auto px-6 py-12 md:py-20 mt-12">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
                <div>
-                  <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">Users Management</h1>
-                  <p className="text-slate-500 dark:text-slate-400">View and manage all registered users and brands.</p>
+                  <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">Quản Lý Người Dùng</h1>
+                  <p className="text-slate-500 dark:text-slate-400">Xem và quản lý tất cả người dùng và thương hiệu đã đăng ký.</p>
                </div>
                <button
                   onClick={loadUsers}
                   className="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-lg font-bold transition-all flex items-center gap-2"
                >
                   <span className="material-icons-round text-sm">refresh</span>
-                  Refresh List
+                  Làm Mới Danh Sách
                </button>
             </div>
 
@@ -91,14 +91,14 @@ const AdminUsersPage = () => {
                <div className="bg-red-50 text-red-600 p-6 rounded-2xl border border-red-100 flex items-center gap-4">
                   <span className="material-icons-round text-2xl">error_outline</span>
                   <div className="flex-grow">
-                     <p className="font-bold">Error loading users</p>
+                     <p className="font-bold">Lỗi tải người dùng</p>
                      <p className="text-sm">{error}</p>
                   </div>
-                  <button onClick={loadUsers} className="px-4 py-2 bg-white text-red-600 rounded-lg hover:bg-red-50 font-bold text-sm">Retry</button>
+                  <button onClick={loadUsers} className="px-4 py-2 bg-white text-red-600 rounded-lg hover:bg-red-50 font-bold text-sm">Thử Lại</button>
                </div>
             ) : (!users || users.length === 0) ? (
                <div className="text-center py-20 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-200 dark:border-slate-800 border-dashed">
-                  <p className="text-slate-500 font-bold">No users found.</p>
+                  <p className="text-slate-500 font-bold">Không tìm thấy người dùng nào.</p>
                </div>
             ) : (
                <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
@@ -106,10 +106,10 @@ const AdminUsersPage = () => {
                      <table className="w-full text-left border-collapse">
                         <thead>
                            <tr className="bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider">
-                              <th className="p-6 font-bold">User</th>
-                              <th className="p-6 font-bold">Role</th>
-                              <th className="p-6 font-bold">Status</th>
-                              <th className="p-6 font-bold">Actions</th>
+                              <th className="p-6 font-bold">Người Dùng</th>
+                              <th className="p-6 font-bold">Vai Trò</th>
+                              <th className="p-6 font-bold">Trạng Thái</th>
+                              <th className="p-6 font-bold">Thao Tác</th>
                            </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -127,7 +127,7 @@ const AdminUsersPage = () => {
                                           )}
                                        </div>
                                        <div>
-                                          <p className="font-bold text-slate-900 dark:text-white">{user.displayName || 'No Name'}</p>
+                                          <p className="font-bold text-slate-900 dark:text-white">{user.displayName || 'Không Có Tên'}</p>
                                           <p className="text-sm text-slate-500">{user.email}</p>
                                        </div>
                                     </div>
@@ -150,7 +150,7 @@ const AdminUsersPage = () => {
                                              disabled={actionLoading[user._id]}
                                              className="px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg text-sm font-bold transition-colors disabled:opacity-50"
                                           >
-                                             {actionLoading[user._id] === 'blocking' ? 'Blocking...' : 'Block'}
+                                             {actionLoading[user._id] === 'blocking' ? 'Đang Khóa...' : 'Khóa'}
                                           </button>
                                        ) : (
                                           <button
@@ -158,11 +158,11 @@ const AdminUsersPage = () => {
                                              disabled={actionLoading[user._id]}
                                              className="px-3 py-1.5 bg-green-100 hover:bg-green-200 text-green-700 rounded-lg text-sm font-bold transition-colors disabled:opacity-50"
                                           >
-                                             {actionLoading[user._id] === 'unblocking' ? 'Unblocking...' : 'Unblock'}
+                                             {actionLoading[user._id] === 'unblocking' ? 'Đang Mở Khóa...' : 'Mở Khóa'}
                                           </button>
                                        )
                                     ) : (
-                                       <span className="text-slate-400 text-sm italic">Admin user</span>
+                                       <span className="text-slate-400 text-sm italic">Quản trị viên</span>
                                     )}
                                  </td>
                               </tr>

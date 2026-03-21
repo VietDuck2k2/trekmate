@@ -19,7 +19,7 @@ const AdminAdsPage = () => {
          const data = await adminAPI.getAds();
          setAds(data);
       } catch (err) {
-         setError(err.message || 'Failed to load ads');
+         setError(err.message || 'Không thể tải quảng cáo');
       } finally {
          setLoading(false);
       }
@@ -31,7 +31,7 @@ const AdminAdsPage = () => {
          await adminAPI.approveAd(adId);
          loadAds();
       } catch (err) {
-         alert('Failed to approve ad: ' + err.message);
+         alert('Lỗi khi phê duyệt quảng cáo: ' + err.message);
       } finally {
          setActionLoading(prev => ({ ...prev, [adId]: null }));
       }
@@ -43,7 +43,7 @@ const AdminAdsPage = () => {
          await adminAPI.hideAd(adId);
          loadAds();
       } catch (err) {
-         alert('Failed to hide ad: ' + err.message);
+         alert('Lỗi khi ẩn quảng cáo: ' + err.message);
       } finally {
          setActionLoading(prev => ({ ...prev, [adId]: null }));
       }
@@ -55,14 +55,14 @@ const AdminAdsPage = () => {
          await adminAPI.unhideAd(adId);
          loadAds();
       } catch (err) {
-         alert('Failed to unhide ad: ' + err.message);
+         alert('Lỗi khi bỏ ẩn quảng cáo: ' + err.message);
       } finally {
          setActionLoading(prev => ({ ...prev, [adId]: null }));
       }
    };
 
    const handleDeleteAd = async (adId, adTitle) => {
-      if (!window.confirm(`Are you sure you want to delete "${adTitle}"? This cannot be undone.`)) {
+      if (!window.confirm(`Bạn có chắc chắn muốn xóa "${adTitle}" không? Hành động này không thể hoàn tác.`)) {
          return;
       }
 
@@ -71,14 +71,14 @@ const AdminAdsPage = () => {
          await adminAPI.deleteAd(adId);
          loadAds();
       } catch (err) {
-         alert('Failed to delete ad: ' + err.message);
+         alert('Lỗi khi xóa quảng cáo: ' + err.message);
       } finally {
          setActionLoading(prev => ({ ...prev, [adId]: null }));
       }
    };
 
    const formatDate = (dateString) => {
-      return new Date(dateString).toLocaleDateString('en-US', {
+      return new Date(dateString).toLocaleDateString('vi-VN', {
          year: 'numeric',
          month: 'short',
          day: 'numeric'
@@ -96,10 +96,10 @@ const AdminAdsPage = () => {
 
    const getAvailableActions = (ad) => {
       const actions = [];
-      if (ad.status === 'PENDING') actions.push({ type: 'approve', label: 'Approve', color: 'bg-green-100 text-green-700 hover:bg-green-200' });
-      if (ad.status === 'ACTIVE') actions.push({ type: 'hide', label: 'Hide', color: 'bg-slate-100 text-slate-700 hover:bg-slate-200' });
-      if (ad.status === 'HIDDEN') actions.push({ type: 'unhide', label: 'Unhide', color: 'bg-blue-100 text-blue-700 hover:bg-blue-200' });
-      actions.push({ type: 'delete', label: 'Delete', color: 'bg-red-100 text-red-700 hover:bg-red-200' });
+      if (ad.status === 'PENDING') actions.push({ type: 'approve', label: 'Phê Duyệt', color: 'bg-green-100 text-green-700 hover:bg-green-200' });
+      if (ad.status === 'ACTIVE') actions.push({ type: 'hide', label: 'Ẩn', color: 'bg-slate-100 text-slate-700 hover:bg-slate-200' });
+      if (ad.status === 'HIDDEN') actions.push({ type: 'unhide', label: 'Bỏ Ẩn', color: 'bg-blue-100 text-blue-700 hover:bg-blue-200' });
+      actions.push({ type: 'delete', label: 'Xóa', color: 'bg-red-100 text-red-700 hover:bg-red-200' });
       return actions;
    };
 
@@ -108,15 +108,15 @@ const AdminAdsPage = () => {
          <div className="max-w-7xl mx-auto px-6 py-12 md:py-20 mt-12">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
                <div>
-                  <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">Ads Management</h1>
-                  <p className="text-slate-500 dark:text-slate-400">Review and manage sponsored content.</p>
+                  <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">Quản Lý Quảng Cáo</h1>
+                  <p className="text-slate-500 dark:text-slate-400">Xem xét và quản lý nội dung được tài trợ.</p>
                </div>
                <button
                   onClick={loadAds}
                   className="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-lg font-bold transition-all flex items-center gap-2"
                >
                   <span className="material-icons-round text-sm">refresh</span>
-                  Refresh List
+                  Làm Mới Danh Sách
                </button>
             </div>
 
@@ -128,14 +128,14 @@ const AdminAdsPage = () => {
                <div className="bg-red-50 text-red-600 p-6 rounded-2xl border border-red-100 flex items-center gap-4">
                   <span className="material-icons-round text-2xl">error_outline</span>
                   <div className="flex-grow">
-                     <p className="font-bold">Error loading ads</p>
+                     <p className="font-bold">Lỗi tải quảng cáo</p>
                      <p className="text-sm">{error}</p>
                   </div>
-                  <button onClick={loadAds} className="px-4 py-2 bg-white text-red-600 rounded-lg hover:bg-red-50 font-bold text-sm">Retry</button>
+                  <button onClick={loadAds} className="px-4 py-2 bg-white text-red-600 rounded-lg hover:bg-red-50 font-bold text-sm">Thử Lại</button>
                </div>
             ) : (!ads || ads.length === 0) ? (
                <div className="text-center py-20 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-200 dark:border-slate-800 border-dashed">
-                  <p className="text-slate-500 font-bold">No ads found.</p>
+                  <p className="text-slate-500 font-bold">Không tìm thấy quảng cáo nào.</p>
                </div>
             ) : (
                <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
@@ -143,11 +143,11 @@ const AdminAdsPage = () => {
                      <table className="w-full text-left border-collapse">
                         <thead>
                            <tr className="bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider">
-                              <th className="p-6 font-bold">Ad Details</th>
-                              <th className="p-6 font-bold">Brand</th>
-                              <th className="p-6 font-bold">Status</th>
-                              <th className="p-6 font-bold">Created</th>
-                              <th className="p-6 font-bold">Actions</th>
+                              <th className="p-6 font-bold">Chi Tiết Quảng Cáo</th>
+                              <th className="p-6 font-bold">Thương Hiệu</th>
+                              <th className="p-6 font-bold">Trạng Thái</th>
+                              <th className="p-6 font-bold">Ngày Tạo</th>
+                              <th className="p-6 font-bold">Thao Tác</th>
                            </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -172,7 +172,7 @@ const AdminAdsPage = () => {
                                           {(ad.brand?.displayName || ad.brand?.brandName || ad.brand?.email || 'B')[0].toUpperCase()}
                                        </div>
                                        <span className="text-sm font-medium text-slate-700 dark:text-slate-200 truncate max-w-[120px]">
-                                          {ad.brand?.displayName || ad.brand?.brandName || ad.brand?.email || 'Unknown'}
+                                          {ad.brand?.displayName || ad.brand?.brandName || ad.brand?.email || 'Không rõ'}
                                        </span>
                                     </div>
                                  </td>

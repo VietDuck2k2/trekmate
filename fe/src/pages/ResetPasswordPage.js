@@ -14,7 +14,7 @@ const ResetPasswordPage = () => {
    const handleSubmit = async (e) => {
       e.preventDefault();
       if (password !== confirmPassword) {
-         setError('Passwords do not match');
+         setError('Mật khẩu không khớp');
          return;
       }
 
@@ -26,7 +26,7 @@ const ResetPasswordPage = () => {
          setSuccess(true);
          setTimeout(() => navigate('/login'), 3000);
       } catch (err) {
-         setError(err.message || 'Reset failed');
+         setError(err.message || 'Đặt lại thất bại');
       } finally {
          setLoading(false);
       }
@@ -36,13 +36,13 @@ const ResetPasswordPage = () => {
       <div className="flex min-h-screen items-center justify-center bg-slate-50 dark:bg-slate-900 px-4">
          <div className="w-full max-w-md bg-white dark:bg-slate-800 rounded-3xl shadow-xl p-8">
             <div className="text-center mb-8">
-               <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Reset Password</h1>
-               <p className="text-slate-500">Set a new password for your account.</p>
+               <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Đặt Lại Mật Khẩu</h1>
+               <p className="text-slate-500">Thiết lập mật khẩu mới cho tài khoản của bạn.</p>
             </div>
 
             {success && (
                <div className="mb-6 p-4 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-2xl text-sm font-medium">
-                  Password reset successful! Redirecting to login...
+                  Đặt lại mật khẩu thành công! Đang chuyển hướng đến đăng nhập...
                </div>
             )}
 
@@ -55,7 +55,7 @@ const ResetPasswordPage = () => {
             {!success && (
                <form onSubmit={handleSubmit} className="space-y-6">
                   <div>
-                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">New Password</label>
+                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Mật Khẩu Mới</label>
                      <input
                         type="password"
                         value={password}
@@ -68,7 +68,7 @@ const ResetPasswordPage = () => {
                   </div>
 
                   <div>
-                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Confirm Password</label>
+                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Xác Nhận Mật Khẩu</label>
                      <input
                         type="password"
                         value={confirmPassword}
@@ -84,13 +84,13 @@ const ResetPasswordPage = () => {
                      disabled={loading}
                      className="w-full py-3.5 bg-primary hover:bg-emerald-700 text-white font-bold rounded-2xl shadow-lg shadow-primary/20 transition transform active:scale-95 disabled:opacity-50"
                   >
-                     {loading ? 'Resetting...' : 'Reset Password'}
+                     {loading ? 'Đang đặt lại...' : 'Đặt Lại Mật Khẩu'}
                   </button>
                </form>
             )}
 
             <div className="mt-8 text-center text-sm">
-               <Link to="/login" className="text-primary font-bold hover:underline">Back to Login</Link>
+               <Link to="/login" className="text-primary font-bold hover:underline">Quay lại Đăng nhập</Link>
             </div>
          </div>
       </div>

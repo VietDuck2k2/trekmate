@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const TripCard = ({ trip, showRole = false, role = null }) => {
    const formatDate = (dateString) => {
-      return new Date(dateString).toLocaleDateString('en-US', {
+      return new Date(dateString).toLocaleDateString('vi-VN', {
          year: 'numeric',
          month: 'short',
          day: 'numeric'
@@ -34,11 +34,11 @@ const TripCard = ({ trip, showRole = false, role = null }) => {
             />
             {showRole && role && (
                <div className="absolute top-2 right-2">
-                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold shadow-md ${role === 'ORGANIZER'
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold shadow-md uppercase tracking-wider ${role === 'ORGANIZER'
                      ? 'bg-amber-400 text-black'
                      : 'bg-cyan-500 text-white'
                      }`}>
-                     {role}
+                     {role === 'ORGANIZER' ? 'Người Tổ Chức' : 'Thành Viên'}
                   </span>
                </div>
             )}
@@ -61,11 +61,11 @@ const TripCard = ({ trip, showRole = false, role = null }) => {
 
                <div className="flex items-center gap-2 mb-2">
                   <span className={`px-1.5 py-0.5 rounded-full text-[9px] uppercase font-bold tracking-wider ${getDifficultyColorClass(trip.difficulty)}`}>
-                     {trip.difficulty || 'Unknown'}
+                     {trip.difficulty || 'Không Rõ'}
                   </span>
                   <div className="flex items-center gap-1 text-[11px] text-slate-500 font-medium">
                      <span className="material-icons-outlined text-[11px]">location_on</span>
-                     <span className="truncate max-w-[120px]">{trip.location || 'Location TBD'}</span>
+                     <span className="truncate max-w-[120px]">{trip.location || 'Chưa Có Địa Điểm'}</span>
                   </div>
                </div>
 
@@ -84,16 +84,16 @@ const TripCard = ({ trip, showRole = false, role = null }) => {
                            <img src={trip.createdBy.avatarUrl} alt={trip.createdBy.displayName} className="w-full h-full object-cover" />
                         ) : (
                            <span className="text-[9px] font-bold text-slate-500 dark:text-slate-400">
-                              {(trip.createdBy?.displayName || 'U')[0]?.toUpperCase()}
+                              {(trip.createdBy?.displayName || 'Ẩn')[0]?.toUpperCase()}
                            </span>
                         )}
                      </div>
                      <span className="text-[11px] font-medium text-slate-600 dark:text-slate-300 truncate max-w-[80px]">
-                        {trip.createdBy?.displayName || 'Anonymous'}
+                        {trip.createdBy?.displayName || 'Ẩn Danh'}
                      </span>
                   </div>
                   <span className="text-[10px] text-slate-400 pl-6">
-                     {trip.members?.length || 0} members
+                     {trip.members?.length || 0} thành viên
                   </span>
                </div>
 
@@ -107,7 +107,7 @@ const TripCard = ({ trip, showRole = false, role = null }) => {
                      to={`/trips/${trip._id}`}
                      className="text-primary text-[10px] font-bold hover:underline"
                   >
-                     View Details
+                     Xem Chi Tiết
                   </Link>
                </div>
             </div>

@@ -13,7 +13,7 @@ const TrekCard = ({ trek }) => {
       }
    }
 
-   const organizerName = trek.createdBy?.displayName || 'Unknown';
+   const organizerName = trek.createdBy?.displayName || 'Không rõ';
    const organizerInitial = organizerName[0]?.toUpperCase();
 
    return (
@@ -28,7 +28,7 @@ const TrekCard = ({ trek }) => {
                />
                <div className="absolute top-3 left-3">
                   <span className={`px-2.5 py-1 backdrop-blur-md text-white text-[10px] font-bold rounded-full uppercase tracking-widest shadow-lg ${getDifficultyColorClass(trek.difficulty)}`}>
-                     {trek.difficulty || 'General'}
+                     {trek.difficulty || 'Chung'}
                   </span>
                </div>
                <div className="absolute top-3 right-3">
@@ -57,9 +57,9 @@ const TrekCard = ({ trek }) => {
                   </div>
                   <div className="text-right">
                      <span className="block text-[9px] uppercase font-bold text-slate-400">
-                        {new Date(trek.startDate).toLocaleDateString()}
+                        {new Date(trek.startDate).toLocaleDateString('vi-VN')}
                      </span>
-                     <span className="text-xs font-bold text-primary">{trek.members?.length || 0} members</span>
+                     <span className="text-xs font-bold text-primary">{trek.members?.length || 0} thành viên</span>
                   </div>
                </div>
             </div>

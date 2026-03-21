@@ -45,12 +45,12 @@ const TripDetailPage = () => {
       try {
          setLoading(true);
          setError(null);
-         if (!id) throw new Error('Trip ID is missing from URL');
+         if (!id) throw new Error('Thiếu ID chuyến đi từ URL');
          const tripData = await tripsAPI.getTripDetails(id);
          setTrip(tripData);
       } catch (err) {
          console.error('Error loading trip details:', err);
-         setError(err.message || 'Failed to load trip details');
+         setError(err.message || 'Không thể tải chi tiết chuyến đi');
       } finally {
          setLoading(false);
       }
@@ -69,22 +69,22 @@ const TripDetailPage = () => {
          setShowJoinForm(false);
          await loadTripDetails();
          refreshNotifications();
-         alert('Join request submitted! The organizer will review your request.');
+         alert('Yêu cầu tham gia đã được gửi! Người tổ chức sẽ xem xét yêu cầu của bạn.');
       } catch (err) {
-         alert('Failed to submit join request: ' + err.message);
+         alert('Nhận yêu cầu tham gia thất bại: ' + err.message);
       } finally {
          setActionLoading(false);
       }
    };
 
    const handleLeaveTrip = async () => {
-      if (!window.confirm('Are you sure you want to leave this trip?')) return;
+      if (!window.confirm('Bạn có chắc chắn muốn rời khỏi chuyến đi này không?')) return;
       try {
          setActionLoading(true);
          await tripsAPI.leaveTrip(id);
          await loadTripDetails();
       } catch (err) {
-         alert('Failed to leave trip: ' + err.message);
+         alert('Rời khỏi chuyến đi thất bại: ' + err.message);
       } finally {
          setActionLoading(false);
       }
@@ -96,24 +96,24 @@ const TripDetailPage = () => {
          await tripsAPI.approveJoinRequest(id, requestUserId);
          await loadTripDetails();
          refreshNotifications();
-         alert('Join request approved!');
+         alert('Yêu cầu tham gia đã được phê duyệt!');
       } catch (err) {
-         alert('Failed to approve request: ' + err.message);
+         alert('Phê duyệt yêu cầu thất bại: ' + err.message);
       } finally {
          setActionLoading(false);
       }
    };
 
    const handleRejectRequest = async (requestUserId) => {
-      if (!window.confirm('Are you sure you want to reject this join request?')) return;
+      if (!window.confirm('Bạn có chắc chắn muốn từ chối yêu cầu tham gia này không?')) return;
       try {
          setActionLoading(true);
          await tripsAPI.rejectJoinRequest(id, requestUserId);
          await loadTripDetails();
          refreshNotifications();
-         alert('Join request rejected.');
+         alert('Yêu cầu tham gia đã bị từ chối.');
       } catch (err) {
-         alert('Failed to reject request: ' + err.message);
+         alert('Từ chối yêu cầu thất bại: ' + err.message);
       } finally {
          setActionLoading(false);
       }
@@ -152,7 +152,7 @@ const TripDetailPage = () => {
          });
       } catch (err) {
          console.error('Error loading review eligibility:', err);
-         setReviewEligibility({ isReviewable: false, reason: 'Failed to verify eligibility', loading: false });
+         setReviewEligibility({ isReviewable: false, reason: 'Không thể xác minh tính hợp lệ', loading: false });
       }
    }, [id]);
 
@@ -163,7 +163,7 @@ const TripDetailPage = () => {
          loadUserReview();
          loadReviewEligibility();
       } else {
-         setReviewEligibility({ isReviewable: false, reason: 'Please login to review', loading: false });
+         setReviewEligibility({ isReviewable: false, reason: 'Vui lòng đăng nhập để đánh giá', loading: false });
       }
    }, [loadTripDetails, loadReviews, loadUserReview, loadReviewEligibility, user]);
 
@@ -179,7 +179,7 @@ const TripDetailPage = () => {
          await loadReviews();
          await loadUserReview();
       } catch (err) {
-         alert('Error saving review: ' + err.message);
+         alert('Lỗi lưu đánh giá: ' + err.message);
       } finally {
          setReviewLoading(false);
       }
@@ -187,21 +187,23 @@ const TripDetailPage = () => {
 
    // Helpers
    const formatDate = (dateString, simple = false) => {
-      if (!dateString) return 'TBD';
+      if (!dateString) return 'Sắp tới';
       const date = new Date(dateString);
       if (simple) {
          return {
-            month: date.toLocaleDateString('en-US', { month: 'short' }),
+            month: date.toLocaleDateString('vi-VN', { month: 'short' }),
             day: date.getDate()
          };
       }
-      return date.toLocaleDateString('en-US', {
+      return date.toLocaleDateString('vi-VN', {
          weekday: 'long',
          year: 'numeric',
          month: 'long',
          day: 'numeric'
       });
    };
+
+   const difficultyLabels = { easy: "Dễ", moderate: "Vừa", hard: "Khó", extreme: "Cực khó" };
 
    const getDifficultyStyle = (difficulty) => {
       switch (difficulty?.toLowerCase()) {
@@ -238,7 +240,7 @@ const TripDetailPage = () => {
       return (
          <Layout>
             <div className="flex items-center justify-center min-h-[60vh]">
-               <div className="text-xl text-slate-500 animate-pulse">Loading Trip Details...</div>
+               <div className="text-xl text-slate-500 animate-pulse">Đang tải chi tiết chuyến đi...</div>
             </div>
          </Layout>
       );
@@ -248,8 +250,8 @@ const TripDetailPage = () => {
       return (
          <Layout>
             <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-               <div className="text-red-500 text-xl font-bold">Error: {error || 'Trip not found'}</div>
-               <button onClick={loadTripDetails} className="px-6 py-2 bg-primary text-white rounded-lg">Retry</button>
+               <div className="text-red-500 text-xl font-bold">Lỗi: {error || 'Không tìm thấy chuyến đi'}</div>
+               <button onClick={loadTripDetails} className="px-6 py-2 bg-primary text-white rounded-lg">Thử lại</button>
             </div>
          </Layout>
       );
@@ -273,7 +275,7 @@ const TripDetailPage = () => {
                   <div className="glass-overlay p-6 md:p-8 rounded-2xl max-w-3xl backdrop-blur-md bg-white/10 border border-white/20 text-white">
                      <div className="flex flex-wrap gap-2 mb-4">
                         <span className={`px-3 py-1 text-xs font-bold border rounded-full flex items-center gap-1 uppercase tracking-wider backdrop-blur-sm ${getDifficultyStyle(trip.difficulty)} shadow-sm`}>
-                           {trip.difficulty}
+                           {difficultyLabels[trip.difficulty] || trip.difficulty}
                         </span>
                         <span className="px-3 py-1 bg-white/20 text-white text-xs font-bold border border-white/20 rounded-full flex items-center gap-1 uppercase tracking-wider backdrop-blur-sm shadow-sm">
                            <span className="material-icons-outlined text-sm">location_on</span>
@@ -281,7 +283,7 @@ const TripDetailPage = () => {
                         </span>
                         {trip.costPerPerson && (
                            <span className="px-3 py-1 bg-emerald-500/80 text-white text-xs font-bold border border-emerald-400/50 rounded-full flex items-center gap-1 shadow-sm">
-                              💰 ${trip.costPerPerson}
+                              💰 {Number(trip.costPerPerson).toLocaleString('vi-VN')} VNĐ
                            </span>
                         )}
                      </div>
@@ -299,24 +301,24 @@ const TripDetailPage = () => {
                            className="bg-white text-slate-900 hover:bg-slate-100 px-8 py-4 rounded-xl font-bold flex items-center gap-2 shadow-lg transition-transform active:scale-95 whitespace-nowrap"
                         >
                            <span className="material-icons-outlined">edit</span>
-                           Edit Trip
+                           Sửa Chuyến Đi
                         </button>
                      ) : !user ? (
                         <button
                            onClick={() => navigate('/login')}
                            className="bg-primary hover:bg-emerald-700 text-white px-8 py-4 rounded-xl font-bold flex items-center gap-2 shadow-lg transition-transform active:scale-95 whitespace-nowrap"
                         >
-                           Login to Join
+                           Đăng nhập để Tham gia
                         </button>
                      ) : isUserJoined() ? (
                         <div className="px-8 py-4 bg-emerald-500/90 backdrop-blur-md text-white rounded-xl font-bold flex items-center gap-2 shadow-lg">
                            <span className="material-icons-outlined">check_circle</span>
-                           Member
+                           Thành viên
                         </div>
                      ) : getUserJoinRequest() ? (
                         <div className="px-8 py-4 bg-amber-500/90 backdrop-blur-md text-white rounded-xl font-bold flex items-center gap-2 shadow-lg">
                            <span className="material-icons-outlined">hourglass_empty</span>
-                           Request Pending
+                           Đang chờ phê duyệt
                         </div>
                      ) : (
                         <button
@@ -325,7 +327,7 @@ const TripDetailPage = () => {
                            className={`${trip.maxMembers && trip.members?.length >= trip.maxMembers ? 'bg-slate-500' : 'bg-primary hover:bg-emerald-700'} text-white px-8 py-4 rounded-xl font-bold flex items-center gap-2 shadow-lg transition-transform active:scale-95 whitespace-nowrap`}
                         >
                            <span className="material-icons-outlined">person_add</span>
-                           {trip.maxMembers && trip.members?.length >= trip.maxMembers ? 'Trip Full' : 'Join Trip'}
+                           {trip.maxMembers && trip.members?.length >= trip.maxMembers ? 'Chuyến đi đã đầy' : 'Tham gia Chuyến đi'}
                         </button>
                      )}
 
@@ -356,8 +358,8 @@ const TripDetailPage = () => {
                            <span className="material-icons-round text-3xl">stars</span>
                         </div>
                         <div>
-                           <p className="font-bold text-emerald-900 dark:text-emerald-100 text-xl">You are the organizer</p>
-                           <p className="text-emerald-700/70 dark:text-emerald-400/70">You have full control over managing participants and trip details.</p>
+                           <p className="font-bold text-emerald-900 dark:text-emerald-100 text-xl">Bạn là người tổ chức</p>
+                           <p className="text-emerald-700/70 dark:text-emerald-400/70">Bạn có toàn quyền kiểm soát việc quản lý người tham gia và chi tiết chuyến đi.</p>
                         </div>
                      </div>
                   )}
@@ -368,12 +370,12 @@ const TripDetailPage = () => {
                         <div className="absolute top-0 left-0 w-1 h-full bg-primary"></div>
                         <h3 className="text-2xl font-bold mb-4 flex items-center gap-2">
                            <span className="material-icons-round text-primary">send</span>
-                           Request to Join
+                           Yêu Cầu Tham Gia
                         </h3>
                         <textarea
                            value={joinMessage}
                            onChange={(e) => setJoinMessage(e.target.value)}
-                           placeholder="Tell the organizer why you're excited to join..."
+                           placeholder="Hãy cho người tổ chức biết lý do bạn muốn tham gia..."
                            className="w-full p-4 border border-slate-200 dark:border-slate-600 rounded-xl mb-4 min-h-[120px] focus:ring-2 focus:ring-primary/50 outline-none dark:bg-slate-900 dark:text-white"
                         />
                         <div className="flex gap-3 justify-end">
@@ -381,14 +383,14 @@ const TripDetailPage = () => {
                               onClick={() => setShowJoinForm(false)}
                               className="px-6 py-2.5 rounded-lg font-semibold text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors"
                            >
-                              Cancel
+                              Hủy
                            </button>
                            <button
                               onClick={handleJoinTrip}
                               disabled={actionLoading}
                               className="px-6 py-2.5 bg-primary text-white rounded-lg font-semibold hover:bg-emerald-700 transition-colors shadow-lg shadow-primary/30 flex items-center gap-2"
                            >
-                              {actionLoading ? 'Sending...' : 'Send Request'}
+                              {actionLoading ? 'Đang gửi...' : 'Gửi Yêu Cầu'}
                               <span className="material-icons-round text-sm">send</span>
                            </button>
                         </div>
@@ -400,7 +402,7 @@ const TripDetailPage = () => {
                      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-8 shadow-sm">
                         <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
                            <span className="material-icons-round text-amber-500">pending_actions</span>
-                           Pending Requests <span className="px-2 py-0.5 bg-amber-100 text-amber-800 text-xs rounded-full">{getPendingRequests().length}</span>
+                           Yêu Cầu Đang Chờ <span className="px-2 py-0.5 bg-amber-100 text-amber-800 text-xs rounded-full">{getPendingRequests().length}</span>
                         </h3>
                         <div className="space-y-4">
                            {getPendingRequests().map(request => (
@@ -417,7 +419,7 @@ const TripDetailPage = () => {
                                     </div>
                                     <div>
                                        <p className="font-bold dark:text-white">{request.user.displayName}</p>
-                                       <p className="text-xs text-slate-500">Requested: {new Date(request.createdAt).toLocaleDateString()}</p>
+                                       <p className="text-xs text-slate-500">Đã yêu cầu: {new Date(request.createdAt).toLocaleDateString('vi-VN')}</p>
                                     </div>
                                  </div>
                                  <div className="flex-1 w-full md:w-auto">
@@ -433,13 +435,13 @@ const TripDetailPage = () => {
                                           onClick={() => handleRejectRequest(request.user._id)}
                                           className="px-4 py-2 text-sm font-bold text-red-500 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
                                        >
-                                          Reject
+                                          Từ chối
                                        </button>
                                        <button
                                           onClick={() => handleApproveRequest(request.user._id)}
                                           className="px-4 py-2 text-sm font-bold text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors shadow-sm"
                                        >
-                                          Approve
+                                          Phê duyệt
                                        </button>
                                     </div>
                                  )}
@@ -453,7 +455,7 @@ const TripDetailPage = () => {
                   <section>
                      <h2 className="text-3xl font-display font-bold mb-6 flex items-center gap-3 dark:text-white">
                         <span className="material-icons-round text-primary text-4xl">auto_stories</span>
-                        The Journey
+                        Hành Trình
                      </h2>
                      <div className="prose prose-lg dark:prose-invert max-w-none text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line">
                         {trip.description}
@@ -465,7 +467,7 @@ const TripDetailPage = () => {
                      <section>
                         <h2 className="text-3xl font-display font-bold mb-6 flex items-center gap-3 dark:text-white">
                            <span className="material-icons-round text-primary text-4xl">place</span>
-                           Location & Meeting Point
+                           Địa Điểm & Điểm Hẹn
                         </h2>
 
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -477,7 +479,7 @@ const TripDetailPage = () => {
                                        <span className="material-icons-round text-2xl">exploration</span>
                                     </div>
                                     <div>
-                                       <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Destination</p>
+                                       <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Đích Đến</p>
                                        <p className="font-bold text-lg dark:text-white">{trip.location}</p>
                                     </div>
                                  </div>
@@ -489,9 +491,9 @@ const TripDetailPage = () => {
                                        <span className="material-icons-round text-2xl">location_on</span>
                                     </div>
                                     <div>
-                                       <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Meeting Point</p>
+                                       <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Điểm Hẹn</p>
                                        <p className="font-bold text-lg dark:text-white">{trip.meetingPoint}</p>
-                                       <p className="text-xs text-slate-500 font-medium mt-0.5">Please arrive on time</p>
+                                       <p className="text-xs text-slate-500 font-medium mt-0.5">Vui lòng đến đúng giờ</p>
                                     </div>
                                  </div>
                               )}
@@ -508,13 +510,13 @@ const TripDetailPage = () => {
                                     {trip.locationCoords?.lat && (
                                        <Marker
                                           position={trip.locationCoords}
-                                          label="Destination"
+                                          label="Đích Đến"
                                        />
                                     )}
                                     {trip.meetingPointCoords?.lat && (
                                        <Marker
                                           position={trip.meetingPointCoords}
-                                          label="Meeting Point"
+                                          label="Điểm Hẹn"
                                           icon={{
                                              url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
                                           }}
@@ -524,7 +526,7 @@ const TripDetailPage = () => {
                               ) : (
                                  <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 animate-pulse">
                                     <span className="material-icons-round text-4xl mb-2">map</span>
-                                    <p className="font-bold">Loading Map...</p>
+                                    <p className="font-bold">Đang tải Bản đồ...</p>
                                  </div>
                               )}
                            </div>
@@ -537,7 +539,7 @@ const TripDetailPage = () => {
                      <section>
                         <h2 className="text-3xl font-display font-bold mb-6 flex items-center gap-3 dark:text-white">
                            <span className="material-icons-round text-amber-500 text-4xl">warning</span>
-                           Requirements
+                           Yêu Cầu
                         </h2>
                         <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/50 p-8 rounded-2xl">
                            <p className="text-amber-900 dark:text-amber-100 text-lg leading-relaxed whitespace-pre-line">
@@ -552,7 +554,7 @@ const TripDetailPage = () => {
                      <section>
                         <h2 className="text-3xl font-display font-bold mb-6 flex items-center gap-3 dark:text-white">
                            <span className="material-icons-round text-primary text-4xl">perm_media</span>
-                           Gallery
+                           Thư Viện Ảnh
                         </h2>
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                            {trip.photos.map((photo, index) => (
@@ -570,20 +572,20 @@ const TripDetailPage = () => {
                      <div className="flex items-center justify-between mb-8">
                         <h2 className="text-3xl font-display font-bold flex items-center gap-3 dark:text-white">
                            <span className="material-icons-round text-yellow-500 text-4xl">star</span>
-                           Reviews
+                           Đánh Giá
                         </h2>
                         {reviewStats.totalReviews > 0 && (
                            <div className="flex items-center gap-2 bg-yellow-50 px-4 py-2 rounded-full border border-yellow-100">
                               <span className="text-yellow-600 font-bold text-lg">{reviewStats.averageRating.toFixed(1)}</span>
                               <span className="text-yellow-400">★</span>
-                              <span className="text-slate-400 text-sm">({reviewStats.totalReviews} reviews)</span>
+                              <span className="text-slate-400 text-sm">({reviewStats.totalReviews} đánh giá)</span>
                            </div>
                         )}
                      </div>
 
                      {canReview() ? (
                         <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm mb-10">
-                           <h3 className="text-xl font-bold mb-4 dark:text-white">Write a Review</h3>
+                           <h3 className="text-xl font-bold mb-4 dark:text-white">Viết Đánh Giá</h3>
                            <form onSubmit={handleReviewSubmit} className="space-y-4">
                               <div className="flex items-center gap-2 mb-2">
                                  {renderStars(reviewForm.rating, true)}
@@ -591,7 +593,7 @@ const TripDetailPage = () => {
                               <textarea
                                  className="w-full p-4 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary/50 outline-none dark:bg-slate-800 dark:text-white"
                                  rows="3"
-                                 placeholder="Share your experience..."
+                                 placeholder="Chia sẻ trải nghiệm của bạn..."
                                  value={reviewForm.comment}
                                  onChange={(e) => setReviewForm(prev => ({ ...prev, comment: e.target.value }))}
                               />
@@ -600,14 +602,14 @@ const TripDetailPage = () => {
                                  disabled={reviewLoading}
                                  className="bg-primary text-white px-6 py-2 rounded-lg font-bold hover:bg-emerald-700 transition-colors"
                               >
-                                 {reviewLoading ? 'Submitting...' : (userReview ? 'Update Review' : 'Post Review')}
+                                 {reviewLoading ? 'Đang gửi...' : (userReview ? 'Cập Nhật Đánh Giá' : 'Đăng Đánh Giá')}
                               </button>
                            </form>
                         </div>
                      ) : !reviewEligibility.loading && reviewEligibility.reason && isUserJoined() && (
                         <div className="bg-slate-50 dark:bg-slate-800/50 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 mb-10 flex items-center gap-4 text-slate-500">
                            <span className="material-icons-round text-amber-500">info</span>
-                           <p>Note: {reviewEligibility.reason}. You'll be able to write a review once the trip is completed.</p>
+                           <p>Lưu ý: {reviewEligibility.reason}. Bạn sẽ có thể viết đánh giá sau khi chuyến đi kết thúc.</p>
                         </div>
                      )}
 
@@ -625,7 +627,7 @@ const TripDetailPage = () => {
                                           </div>
                                        )}
                                     </div>
-                                    <span className="font-bold text-slate-800 dark:text-white">{review.user?.displayName || 'Anonymous'}</span>
+                                    <span className="font-bold text-slate-800 dark:text-white">{review.user?.displayName || 'Ẩn danh'}</span>
                                  </div>
                                  <div className="flex text-yellow-400 text-sm">
                                     {[...Array(5)].map((_, i) => (
@@ -634,11 +636,11 @@ const TripDetailPage = () => {
                                  </div>
                               </div>
                               <p className="text-slate-600 dark:text-slate-300 italic">"{review.comment}"</p>
-                              <p className="text-xs text-slate-400 mt-3">{new Date(review.createdAt).toLocaleDateString()}</p>
+                              <p className="text-xs text-slate-400 mt-3">{new Date(review.createdAt).toLocaleDateString('vi-VN')}</p>
                            </div>
                         )) : (
                            <div className="text-center py-10 text-slate-400 bg-slate-50 rounded-2xl border border-dotted border-slate-300">
-                              No reviews yet. Be the first to share your experience!
+                              Chưa có đánh giá nào. Hãy là người đầu tiên chia sẻ trải nghiệm của bạn!
                            </div>
                         )}
                      </div>
@@ -656,15 +658,15 @@ const TripDetailPage = () => {
                         </div>
                         <h3 className="font-display text-2xl font-bold mb-2 flex items-center gap-2 text-emerald-700">
                            <span className="material-icons-round">luggage</span>
-                           You're Going!
+                           Bạn Sẽ Đi!
                         </h3>
-                        <p className="text-slate-500 mb-6 relative z-10">Get ready for an amazing adventure.</p>
+                        <p className="text-slate-500 mb-6 relative z-10">Hãy chuẩn bị cho một cuộc thám hiểm tuyệt vời.</p>
                         <button
                            onClick={handleLeaveTrip}
                            disabled={actionLoading}
                            className="w-full py-3 border border-red-200 text-red-500 rounded-xl font-bold hover:bg-red-50 transition-colors relative z-10"
                         >
-                           {actionLoading ? 'Leaving...' : 'Cancel Reservation'}
+                           {actionLoading ? 'Đang rời khỏi...' : 'Hủy Đặt Chỗ'}
                         </button>
                      </div>
                   )}
@@ -673,7 +675,7 @@ const TripDetailPage = () => {
                   <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-8 shadow-sm">
                      <h3 className="font-display text-xl mb-6 pb-4 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2 dark:text-white">
                         <span className="material-icons-round text-primary">calendar_today</span>
-                        Trip Dates
+                        Ngày Của Chuyến Đi
                      </h3>
                      <div className="space-y-6">
                         <div className="flex items-start gap-4">
@@ -686,7 +688,7 @@ const TripDetailPage = () => {
                               </span>
                            </div>
                            <div>
-                              <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">Start Date</p>
+                              <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">Ngày Bắt Đầu</p>
                               <p className="font-bold text-lg dark:text-white">{formatDate(trip.startDate)}</p>
                            </div>
                         </div>
@@ -701,7 +703,7 @@ const TripDetailPage = () => {
                                  </span>
                               </div>
                               <div>
-                                 <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">End Date</p>
+                                 <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">Ngày Kết Thúc</p>
                                  <p className="font-bold text-lg dark:text-white">{formatDate(trip.endDate)}</p>
                               </div>
                            </div>
@@ -714,10 +716,10 @@ const TripDetailPage = () => {
                      <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
                         <h3 className="font-display text-xl flex items-center gap-2 dark:text-white">
                            <span className="material-icons-round text-primary">group</span>
-                           Participants
+                           Người Tham Gia
                         </h3>
                         <span className={`px-2 py-1 rounded-lg text-xs font-bold ${trip.maxMembers && trip.members?.length >= trip.maxMembers ? 'bg-red-100 text-red-600' : 'bg-primary/10 text-primary'}`}>
-                           {trip.members?.length || 0} {trip.maxMembers ? `/ ${trip.maxMembers}` : 'Joined'}
+                           {trip.members?.length || 0} {trip.maxMembers ? `/ ${trip.maxMembers}` : 'Đã Tham Gia'}
                         </span>
                      </div>
 
@@ -730,8 +732,8 @@ const TripDetailPage = () => {
                               ) : (trip.createdBy?.displayName?.[0] || 'O')}
                            </div>
                            <div className="min-w-0">
-                              <p className="text-sm font-bold truncate dark:text-white">{trip.createdBy?.displayName || 'Organizer'}</p>
-                              <span className="text-[10px] font-bold bg-amber-500 text-white px-2 py-0.5 rounded-full uppercase tracking-wide">Organizer</span>
+                              <p className="text-sm font-bold truncate dark:text-white">{trip.createdBy?.displayName || 'Người Tổ Chức'}</p>
+                              <span className="text-[10px] font-bold bg-amber-500 text-white px-2 py-0.5 rounded-full uppercase tracking-wide">Người Tổ Chức</span>
                            </div>
                         </div>
 
@@ -750,7 +752,7 @@ const TripDetailPage = () => {
                         ))}
 
                         {(!trip.members || trip.members.length === 0) && (
-                           <p className="text-sm text-slate-400 italic">No other members yet.</p>
+                           <p className="text-sm text-slate-400 italic">Chưa có thành viên nào khác.</p>
                         )}
                      </div>
                   </div>

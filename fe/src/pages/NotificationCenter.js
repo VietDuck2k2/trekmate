@@ -41,7 +41,7 @@ const NotificationCenter = () => {
          setHasMore(response.pagination.hasMore);
          setTotalUnread(response.totalUnread);
       } catch (err) {
-         setError(err.message || 'Failed to load notifications');
+         setError(err.message || 'Không thể tải thông báo');
          console.error('Error loading notifications:', err);
       } finally {
          setLoading(false);
@@ -82,7 +82,7 @@ const NotificationCenter = () => {
          setTotalUnread(0);
       } catch (err) {
          console.error('Error marking all as read:', err);
-         alert('Failed to mark all as read. Please try again.');
+         alert('Đánh dấu tất cả đã đọc thất bại. Vui lòng thử lại.');
       }
    };
 
@@ -111,11 +111,11 @@ const NotificationCenter = () => {
 
    const getNotificationTypeLabel = (type) => {
       switch (type) {
-         case 'JOIN_REQUEST_RECEIVED': return 'Join Request';
-         case 'JOIN_REQUEST_APPROVED': return 'Request Approved';
-         case 'JOIN_REQUEST_REJECTED': return 'Request Rejected';
-         case 'MEMBER_JOINED': return 'New Member';
-         default: return 'Notification';
+         case 'JOIN_REQUEST_RECEIVED': return 'Yêu cầu Tham gia';
+         case 'JOIN_REQUEST_APPROVED': return 'Yêu cầu đã được Chấp thuận';
+         case 'JOIN_REQUEST_REJECTED': return 'Yêu cầu bị Từ chối';
+         case 'MEMBER_JOINED': return 'Thành viên mới';
+         default: return 'Thông báo';
       }
    };
 
@@ -134,23 +134,23 @@ const NotificationCenter = () => {
       const created = new Date(createdAt);
       const diffInMinutes = Math.floor((now - created) / (1000 * 60));
 
-      if (diffInMinutes < 1) return 'Just now';
-      if (diffInMinutes < 60) return `${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''} ago`;
+      if (diffInMinutes < 1) return 'Vừa xong';
+      if (diffInMinutes < 60) return `${diffInMinutes} phút trước`;
 
       const diffInHours = Math.floor(diffInMinutes / 60);
-      if (diffInHours < 24) return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
+      if (diffInHours < 24) return `${diffInHours} giờ trước`;
 
       const diffInDays = Math.floor(diffInHours / 24);
-      if (diffInDays === 1) return 'Yesterday';
-      if (diffInDays < 7) return `${diffInDays} days ago`;
+      if (diffInDays === 1) return 'Hôm qua';
+      if (diffInDays < 7) return `${diffInDays} ngày trước`;
 
       const diffInWeeks = Math.floor(diffInDays / 7);
-      if (diffInWeeks === 1) return '1 week ago';
-      if (diffInWeeks < 4) return `${diffInWeeks} weeks ago`;
+      if (diffInWeeks === 1) return '1 tuần trước';
+      if (diffInWeeks < 4) return `${diffInWeeks} tuần trước`;
 
       const diffInMonths = Math.floor(diffInDays / 30);
-      if (diffInMonths === 1) return '1 month ago';
-      if (diffInMonths < 12) return `${diffInMonths} months ago`;
+      if (diffInMonths === 1) return '1 tháng trước';
+      if (diffInMonths < 12) return `${diffInMonths} tháng trước`;
 
       return created.toLocaleDateString();
    };
@@ -164,11 +164,11 @@ const NotificationCenter = () => {
                <div>
                   <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-3">
                      <span className="material-icons-round text-primary">notifications</span>
-                     Notifications
+                     Thông Báo
                   </h1>
                   <p className="text-slate-500 dark:text-slate-400">
-                     Stay updated with your trip activities
-                     {totalUnread > 0 && <span className="ml-2 px-2 py-0.5 bg-red-100 text-red-600 rounded-full text-xs font-bold">{totalUnread} unread</span>}
+                     Luôn cập nhật các hoạt động chuyến đi của bạn
+                     {totalUnread > 0 && <span className="ml-2 px-2 py-0.5 bg-red-100 text-red-600 rounded-full text-xs font-bold">{totalUnread} chưa đọc</span>}
                   </p>
                </div>
                {totalUnread > 0 && (
@@ -177,7 +177,7 @@ const NotificationCenter = () => {
                      className="text-sm font-bold text-primary hover:text-emerald-700 transition-colors flex items-center gap-1"
                   >
                      <span className="material-icons-round text-sm">done_all</span>
-                     Mark All as Read
+                     Đánh Dấu Tất Cả Đã Đọc
                   </button>
                )}
             </div>
@@ -187,20 +187,20 @@ const NotificationCenter = () => {
                <button
                   onClick={() => setFilter('all')}
                   className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${filter === 'all'
-                        ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm'
-                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                     ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm'
+                     : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
                      }`}
                >
-                  All Notifications
+                  Tất Cả Thông Báo
                </button>
                <button
                   onClick={() => setFilter('unread')}
                   className={`px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 ${filter === 'unread'
-                        ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm'
-                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                     ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm'
+                     : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
                      }`}
                >
-                  Unread
+                  Chưa Đọc
                   {totalUnread > 0 && (
                      <span className="w-5 h-5 bg-red-500 text-white rounded-full text-[10px] flex items-center justify-center">
                         {totalUnread}
@@ -218,10 +218,10 @@ const NotificationCenter = () => {
                <div className="bg-red-50 text-red-600 p-6 rounded-2xl border border-red-100 flex items-center gap-4">
                   <span className="material-icons-round text-2xl">error_outline</span>
                   <div className="flex-grow">
-                     <p className="font-bold">Error loading notifications</p>
+                     <p className="font-bold">Lỗi tải thông báo</p>
                      <p className="text-sm">{error}</p>
                   </div>
-                  <button onClick={() => loadNotifications(1, filter)} className="px-4 py-2 bg-white text-red-600 rounded-lg hover:bg-red-50 font-bold text-sm">Retry</button>
+                  <button onClick={() => loadNotifications(1, filter)} className="px-4 py-2 bg-white text-red-600 rounded-lg hover:bg-red-50 font-bold text-sm">Thử Lại</button>
                </div>
             ) : notifications.length === 0 ? (
                <div className="text-center py-24 bg-slate-50 dark:bg-slate-900/50 rounded-3xl border border-slate-200 dark:border-slate-800 border-dashed">
@@ -229,19 +229,19 @@ const NotificationCenter = () => {
                      <span className="material-icons-round text-4xl text-slate-300">notifications_off</span>
                   </div>
                   <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
-                     {filter === 'unread' ? 'No unread notifications' : 'No notifications yet'}
+                     {filter === 'unread' ? 'Không có thông báo chưa đọc' : 'Chưa có thông báo nào'}
                   </h3>
                   <p className="text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
                      {filter === 'unread'
-                        ? "You're all caught up! Check back later for updates."
-                        : "You'll be notified about trip activities here"}
+                        ? "Bạn đã đọc hết! Hãy quay lại sau để cập nhật."
+                        : "Bạn sẽ được thông báo về các hoạt động chuyến đi tại đây"}
                   </p>
                   {filter === 'unread' && (
                      <button
                         onClick={() => setFilter('all')}
                         className="mt-6 px-6 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-white rounded-xl font-bold hover:shadow-lg transition-all"
                      >
-                        View All Notifications
+                        Xem Tất Cả Thông Báo
                      </button>
                   )}
                </div>
@@ -256,8 +256,8 @@ const NotificationCenter = () => {
                               key={notification._id}
                               onClick={() => handleNotificationClick(notification)}
                               className={`group relative p-5 rounded-2xl border transition-all cursor-pointer ${notification.isRead
-                                    ? 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 hover:border-slate-200 dark:hover:border-slate-700'
-                                    : 'bg-blue-50/50 dark:bg-blue-900/10 border-blue-100 dark:border-blue-900/30'
+                                 ? 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 hover:border-slate-200 dark:hover:border-slate-700'
+                                 : 'bg-blue-50/50 dark:bg-blue-900/10 border-blue-100 dark:border-blue-900/30'
                                  }`}
                            >
                               <div className="flex items-start gap-4">
@@ -307,7 +307,7 @@ const NotificationCenter = () => {
                                        <button
                                           onClick={(e) => handleMarkSingleAsRead(notification._id, e)}
                                           className="p-2 text-primary hover:bg-primary/10 rounded-full transition-colors"
-                                          title="Mark as read"
+                                          title="Đánh dấu đã đọc"
                                        >
                                           <span className="material-icons-round text-sm">done</span>
                                        </button>
@@ -326,7 +326,7 @@ const NotificationCenter = () => {
                            disabled={loading}
                            className="px-8 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-white rounded-xl font-bold hover:shadow-lg transition-all disabled:opacity-50"
                         >
-                           {loading ? 'Loading...' : 'Load More'}
+                           {loading ? 'Đang tải...' : 'Tải Thêm'}
                         </button>
                      </div>
                   )}

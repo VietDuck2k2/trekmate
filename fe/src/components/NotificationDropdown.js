@@ -44,11 +44,11 @@ const NotificationDropdown = ({ onClose }) => {
 
    const getNotificationTypeLabel = (type) => {
       switch (type) {
-         case 'JOIN_REQUEST_RECEIVED': return 'Join Request';
-         case 'JOIN_REQUEST_APPROVED': return 'Request Approved';
-         case 'JOIN_REQUEST_REJECTED': return 'Request Rejected';
-         case 'MEMBER_JOINED': return 'New Member';
-         default: return 'Notification';
+         case 'JOIN_REQUEST_RECEIVED': return 'Yêu cầu Tham gia';
+         case 'JOIN_REQUEST_APPROVED': return 'Yêu cầu đã được Chấp thuận';
+         case 'JOIN_REQUEST_REJECTED': return 'Yêu cầu đã bị Từ chối';
+         case 'MEMBER_JOINED': return 'Thành viên mới';
+         default: return 'Thông báo';
       }
    };
 
@@ -67,21 +67,21 @@ const NotificationDropdown = ({ onClose }) => {
       const created = new Date(createdAt);
       const diffInMinutes = Math.floor((now - created) / (1000 * 60));
 
-      if (diffInMinutes < 1) return 'Just now';
-      if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+      if (diffInMinutes < 1) return 'Vừa xong';
+      if (diffInMinutes < 60) return `${diffInMinutes} phút trước`;
 
       const diffInHours = Math.floor(diffInMinutes / 60);
-      if (diffInHours < 24) return `${diffInHours}h ago`;
+      if (diffInHours < 24) return `${diffInHours} giờ trước`;
 
       const diffInDays = Math.floor(diffInHours / 24);
-      if (diffInDays === 1) return 'Yesterday';
-      if (diffInDays < 7) return `${diffInDays}d ago`;
+      if (diffInDays === 1) return 'Hôm qua';
+      if (diffInDays < 7) return `${diffInDays} ngày trước`;
 
       const diffInWeeks = Math.floor(diffInDays / 7);
-      if (diffInWeeks === 1) return '1 week ago';
-      if (diffInWeeks < 4) return `${diffInWeeks} weeks ago`;
+      if (diffInWeeks === 1) return '1 tuần trước';
+      if (diffInWeeks < 4) return `${diffInWeeks} tuần trước`;
 
-      return created.toLocaleDateString();
+      return created.toLocaleDateString('vi-VN');
    };
 
    return (
@@ -89,14 +89,14 @@ const NotificationDropdown = ({ onClose }) => {
          {/* Header */}
          <div className="px-5 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex justify-between items-center">
             <h4 className="font-bold text-slate-800 dark:text-white text-base">
-               Notifications {totalUnread > 0 && <span className="ml-1 text-primary">({totalUnread})</span>}
+               Thông báo {totalUnread > 0 && <span className="ml-1 text-primary">({totalUnread})</span>}
             </h4>
             {totalUnread > 0 && (
                <button
                   onClick={handleMarkAllAsRead}
                   className="text-xs font-bold text-primary hover:text-emerald-700 transition-colors"
                >
-                  Mark all as read
+                  Đánh dấu tất cả đã đọc
                </button>
             )}
          </div>
@@ -106,7 +106,7 @@ const NotificationDropdown = ({ onClose }) => {
             {loading ? (
                <div className="py-12 flex flex-col items-center justify-center gap-3">
                   <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-                  <span className="text-sm font-medium text-slate-500">Updating...</span>
+                  <span className="text-sm font-medium text-slate-500">Đang cập nhật...</span>
                </div>
             ) : error ? (
                <div className="p-8 text-center">
@@ -118,8 +118,8 @@ const NotificationDropdown = ({ onClose }) => {
                   <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
                      <span className="material-icons-round text-3xl text-slate-400">notifications_off</span>
                   </div>
-                  <h5 className="font-bold text-slate-800 dark:text-white mb-1">No notifications yet</h5>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">We'll alert you when something happens.</p>
+                  <h5 className="font-bold text-slate-800 dark:text-white mb-1">Chưa có thông báo nào</h5>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Chúng tôi sẽ thông báo cho bạn khi có gì đó xảy ra.</p>
                </div>
             ) : (
                <div className="divide-y divide-slate-50 dark:divide-slate-800">
@@ -166,7 +166,7 @@ const NotificationDropdown = ({ onClose }) => {
                                  </div>
                               )}
                               <div className="text-[10px] font-medium text-slate-400 italic shrink-0">
-                                 by {notification.fromUser?.displayName || 'TrekMate'}
+                                 bởi {notification.fromUser?.displayName || 'TrekMate'}
                               </div>
                            </div>
                         </div>
@@ -190,7 +190,7 @@ const NotificationDropdown = ({ onClose }) => {
                   onClick={handleViewAll}
                   className="w-full py-2 text-sm font-bold text-primary hover:bg-white dark:hover:bg-slate-800 rounded-xl transition-all border border-transparent hover:border-slate-200 dark:hover:border-slate-700"
                >
-                  View all activity
+                  Xem tất cả hoạt động
                </button>
             </div>
          )}

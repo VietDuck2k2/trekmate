@@ -30,8 +30,8 @@ const LoginSuccess = () => {
       <div className="flex min-h-screen items-center justify-center bg-white dark:bg-slate-900">
          <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary mx-auto mb-4"></div>
-            <h2 className="text-xl font-semibold text-slate-800 dark:text-white">Authenticating...</h2>
-            <p className="text-slate-500 mt-2">Please wait while we log you in.</p>
+            <h2 className="text-xl font-semibold text-slate-800 dark:text-white">Đang xác thực...</h2>
+            <p className="text-slate-500 mt-2">Vui lòng đợi trong khi chúng tôi đăng nhập cho bạn.</p>
          </div>
       </div>
    );

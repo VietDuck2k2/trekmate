@@ -26,7 +26,7 @@ const BrandDashboard = () => {
          setAds(adsData);
       } catch (err) {
          console.error('Error loading ads:', err);
-         setError(err.message || 'Failed to load your ads');
+         setError(err.message || 'Không thể tải quảng cáo của bạn');
          setAds([]);
       } finally {
          setLoading(false);
@@ -40,7 +40,7 @@ const BrandDashboard = () => {
          setAds(ads.filter(ad => ad._id !== adId));
          setDeleteConfirm(null);
       } catch (err) {
-         alert('Error deleting ad: ' + err.message);
+         alert('Lỗi khi xóa quảng cáo: ' + err.message);
       } finally {
          setDeleting(false);
       }
@@ -48,10 +48,10 @@ const BrandDashboard = () => {
 
    const getStatusParams = (status) => {
       switch (status) {
-         case 'ACTIVE': return { color: 'text-green-600', bg: 'bg-green-100 dark:bg-green-900/30', icon: 'check_circle', text: 'Active' };
-         case 'PENDING': return { color: 'text-yellow-600', bg: 'bg-yellow-100 dark:bg-yellow-900/30', icon: 'hourglass_empty', text: 'Pending Review' };
-         case 'INACTIVE': return { color: 'text-slate-500', bg: 'bg-slate-100 dark:bg-slate-800', icon: 'pause_circle', text: 'Inactive' };
-         case 'HIDDEN': return { color: 'text-red-500', bg: 'bg-red-100 dark:bg-red-900/30', icon: 'visibility_off', text: 'Hidden' };
+         case 'ACTIVE': return { color: 'text-green-600', bg: 'bg-green-100 dark:bg-green-900/30', icon: 'check_circle', text: 'Hoạt động' };
+         case 'PENDING': return { color: 'text-yellow-600', bg: 'bg-yellow-100 dark:bg-yellow-900/30', icon: 'hourglass_empty', text: 'Đang chờ duyệt' };
+         case 'INACTIVE': return { color: 'text-slate-500', bg: 'bg-slate-100 dark:bg-slate-800', icon: 'pause_circle', text: 'Không hoạt động' };
+         case 'HIDDEN': return { color: 'text-red-500', bg: 'bg-red-100 dark:bg-red-900/30', icon: 'visibility_off', text: 'Đã ẩn' };
          default: return { color: 'text-slate-500', bg: 'bg-slate-100 dark:bg-slate-800', icon: 'help', text: status };
       }
    };
@@ -63,15 +63,15 @@ const BrandDashboard = () => {
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
                <div>
-                  <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">My Advertisements</h1>
-                  <p className="text-slate-500 dark:text-slate-400">Manage your brand ads and promotions.</p>
+                  <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">Quảng Cáo Của Tôi</h1>
+                  <p className="text-slate-500 dark:text-slate-400">Quản lý quảng cáo và khuyến mãi thương hiệu của bạn.</p>
                </div>
                <button
                   onClick={() => navigate('/brand/ads/create')}
                   className="bg-primary hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all flex items-center gap-2"
                >
                   <span className="material-icons-round">add</span>
-                  Create New Ad
+                  Tạo Quảng Cáo Mới
                </button>
             </div>
 
@@ -83,23 +83,23 @@ const BrandDashboard = () => {
                <div className="bg-red-50 text-red-600 p-6 rounded-2xl border border-red-100 flex items-center gap-4">
                   <span className="material-icons-round text-2xl">error_outline</span>
                   <div className="flex-grow">
-                     <p className="font-bold">Error loading ads</p>
+                     <p className="font-bold">Lỗi tải quảng cáo</p>
                      <p className="text-sm">{error}</p>
                   </div>
-                  <button onClick={loadAds} className="px-4 py-2 bg-white text-red-600 rounded-lg hover:bg-red-50 font-bold text-sm">Retry</button>
+                  <button onClick={loadAds} className="px-4 py-2 bg-white text-red-600 rounded-lg hover:bg-red-50 font-bold text-sm">Thử Lại</button>
                </div>
             ) : ads.length === 0 ? (
                <div className="text-center py-24 bg-slate-50 dark:bg-slate-900/50 rounded-3xl border border-slate-200 dark:border-slate-800 border-dashed">
                   <div className="w-20 h-20 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
                      <span className="material-icons-round text-4xl text-slate-300">campaign</span>
                   </div>
-                  <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">No advertisements yet</h3>
-                  <p className="text-slate-500 dark:text-slate-400 mb-8 max-w-sm mx-auto">Create your first advertisement to start promoting your brand to the community.</p>
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Chưa có quảng cáo nào</h3>
+                  <p className="text-slate-500 dark:text-slate-400 mb-8 max-w-sm mx-auto">Tạo quảng cáo đầu tiên của bạn để bắt đầu quảng bá thương hiệu của bạn cho cộng đồng.</p>
                   <button
                      onClick={() => navigate('/brand/ads/create')}
                      className="px-6 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-white rounded-xl font-bold hover:shadow-lg transition-all"
                   >
-                     Create Ad
+                     Tạo Quảng Cáo
                   </button>
                </div>
             ) : (
@@ -128,7 +128,7 @@ const BrandDashboard = () => {
                                           <span className="material-icons-round text-[14px]">{status.icon}</span>
                                           {status.text}
                                        </span>
-                                       <span className="text-slate-400">Created: {new Date(ad.createdAt).toLocaleDateString()}</span>
+                                       <span className="text-slate-400">Đã tạo: {new Date(ad.createdAt).toLocaleDateString('vi-VN')}</span>
                                     </div>
                                  </div>
 
@@ -137,14 +137,14 @@ const BrandDashboard = () => {
                                     <button
                                        onClick={() => navigate(`/brand/ads/edit/${ad._id}`)}
                                        className="p-2 text-slate-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
-                                       title="Edit"
+                                       title="Chỉnh Sửa"
                                     >
                                        <span className="material-icons-round">edit</span>
                                     </button>
                                     <button
                                        onClick={() => setDeleteConfirm(ad)}
                                        className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                                       title="Delete"
+                                       title="Xóa"
                                     >
                                        <span className="material-icons-round">delete</span>
                                     </button>
@@ -173,23 +173,23 @@ const BrandDashboard = () => {
                      <div className="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mb-4">
                         <span className="material-icons-round text-2xl">warning</span>
                      </div>
-                     <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Delete Ad?</h3>
+                     <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Xóa Quảng Cáo?</h3>
                      <p className="text-slate-500 dark:text-slate-400 mb-6">
-                        Are you sure you want to delete "<strong>{deleteConfirm.title}</strong>"? This action cannot be undone.
+                        Bạn có chắc chắn muốn xóa "<strong>{deleteConfirm.title}</strong>"? Hành động này không thể hoàn tác.
                      </p>
                      <div className="flex gap-3 justify-end">
                         <button
                            onClick={() => setDeleteConfirm(null)}
                            className="px-5 py-2.5 rounded-xl font-bold text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 transition-colors"
                         >
-                           Cancel
+                           Hủy
                         </button>
                         <button
                            onClick={() => handleDelete(deleteConfirm._id)}
                            disabled={deleting}
                            className="px-5 py-2.5 rounded-xl font-bold bg-red-500 text-white hover:bg-red-600 transition-colors flex items-center gap-2"
                         >
-                           {deleting ? 'Deleting...' : 'Delete Ad'}
+                           {deleting ? 'Đang xóa...' : 'Xóa Quảng Cáo'}
                         </button>
                      </div>
                   </div>

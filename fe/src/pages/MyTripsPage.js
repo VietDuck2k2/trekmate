@@ -56,7 +56,7 @@ const MyTripsPage = () => {
          if (hasOngoing) setActiveTab('ongoing');
 
       } catch (err) {
-         setError(err.message || 'Failed to load trips');
+         setError(err.message || 'Không thể tải chuyến đi');
          setAllTrips([]);
       } finally {
          setLoading(false);
@@ -77,15 +77,15 @@ const MyTripsPage = () => {
 
    // Helper to format dates
    const formatDateRange = (start, end) => {
-      if (!start) return 'TBD';
+      if (!start) return 'Sắp tới';
       const startDate = new Date(start);
       const endDate = end ? new Date(end) : null;
 
       const options = { month: 'short', day: 'numeric' };
       if (endDate) {
-         return `${startDate.toLocaleDateString('en-US', options)} - ${endDate.toLocaleDateString('en-US', options)}`;
+         return `${startDate.toLocaleDateString('vi-VN', options)} - ${endDate.toLocaleDateString('vi-VN', options)}`;
       }
-      return startDate.toLocaleDateString('en-US', options);
+      return startDate.toLocaleDateString('vi-VN', options);
    };
 
    if (!user) {
@@ -93,9 +93,9 @@ const MyTripsPage = () => {
          <Layout>
             <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
                <span className="material-icons-round text-6xl text-slate-300 mb-4">lock</span>
-               <h1 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">Login Required</h1>
-               <p className="text-slate-500 mb-6">You need to be logged in to view your trips.</p>
-               <Link to="/login" className="px-6 py-3 bg-primary text-white rounded-xl font-bold hover:bg-emerald-700 transition">Login Now</Link>
+               <h1 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">Yêu Cầu Đăng Nhập</h1>
+               <p className="text-slate-500 mb-6">Bạn cần đăng nhập để xem các chuyến đi của mình.</p>
+               <Link to="/login" className="px-6 py-3 bg-primary text-white rounded-xl font-bold hover:bg-emerald-700 transition">Đăng Nhập Ngay</Link>
             </div>
          </Layout>
       );
@@ -105,16 +105,16 @@ const MyTripsPage = () => {
       return (
          <Layout>
             <div className="flex items-center justify-center min-h-screen pt-20">
-               <div className="text-xl text-slate-500 animate-pulse">Loading your adventures...</div>
+               <div className="text-xl text-slate-500 animate-pulse">Đang tải các chuyến thám hiểm của bạn...</div>
             </div>
          </Layout>
       );
    }
 
    const tabs = [
-      { id: 'ongoing', label: 'Ongoing', icon: 'rocket_launch', count: ongoing.length, color: 'text-orange-600', bg: 'bg-orange-100 dark:bg-orange-900/30' },
-      { id: 'upcoming', label: 'Upcoming', icon: 'calendar_today', count: upcoming.length, color: 'text-blue-600', bg: 'bg-blue-100 dark:bg-blue-900/30' },
-      { id: 'completed', label: 'Completed', icon: 'check_circle', count: completed.length, color: 'text-emerald-600', bg: 'bg-emerald-100 dark:bg-emerald-900/30' }
+      { id: 'ongoing', label: 'Đang Diễn Ra', icon: 'rocket_launch', count: ongoing.length, color: 'text-orange-600', bg: 'bg-orange-100 dark:bg-orange-900/30' },
+      { id: 'upcoming', label: 'Sắp Tới', icon: 'calendar_today', count: upcoming.length, color: 'text-blue-600', bg: 'bg-blue-100 dark:bg-blue-900/30' },
+      { id: 'completed', label: 'Đã Kết Thúc', icon: 'check_circle', count: completed.length, color: 'text-emerald-600', bg: 'bg-emerald-100 dark:bg-emerald-900/30' }
    ];
 
    return (
@@ -123,16 +123,16 @@ const MyTripsPage = () => {
             <header className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
                <div>
                   <nav className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-2">
-                     <span>Dashboard</span>
+                     <span>Bảng Điều Khiển</span>
                      <span className="material-icons-round text-xs">chevron_right</span>
-                     <span className="text-primary font-medium">My Trips</span>
+                     <span className="text-primary font-medium">Chuyến Đi Của Tôi</span>
                   </nav>
-                  <h1 className="text-4xl md:text-5xl font-display font-bold text-slate-900 dark:text-white">My Adventures</h1>
-                  <p className="text-slate-500 dark:text-slate-400 mt-2">Manage your trekking journeys and connect with the community.</p>
+                  <h1 className="text-4xl md:text-5xl font-display font-bold text-slate-900 dark:text-white">Cuộc Thám Hiểm Của Tôi</h1>
+                  <p className="text-slate-500 dark:text-slate-400 mt-2">Quản lý các hành trình trekking của bạn và kết nối với cộng đồng.</p>
                </div>
                <Link to="/trips/create" className="bg-primary hover:bg-emerald-800 text-white px-8 py-4 rounded-2xl flex items-center gap-2 font-semibold shadow-xl shadow-primary/20 transition-all transform hover:-translate-y-1 active:scale-95">
                   <span className="material-icons-round">add</span>
-                  Create New Trip
+                  Tạo Chuyến Đi Mới
                </Link>
             </header>
 
@@ -140,7 +140,7 @@ const MyTripsPage = () => {
                <div className="mb-8 p-4 bg-red-50 text-red-600 border border-red-200 rounded-xl flex items-center gap-3">
                   <span className="material-icons-round">error</span>
                   {error}
-                  <button onClick={loadUserTrips} className="underline font-bold ml-auto">Retry</button>
+                  <button onClick={loadUserTrips} className="underline font-bold ml-auto">Thử Lại</button>
                </div>
             )}
 
@@ -154,8 +154,8 @@ const MyTripsPage = () => {
                               key={tab.id}
                               onClick={() => setActiveTab(tab.id)}
                               className={`flex items-center justify-between p-4 rounded-2xl transition-all ${activeTab === tab.id
-                                    ? 'bg-primary text-white shadow-lg shadow-primary/20'
-                                    : 'hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-600 dark:text-slate-400'
+                                 ? 'bg-primary text-white shadow-lg shadow-primary/20'
+                                 : 'hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-600 dark:text-slate-400'
                                  }`}
                            >
                               <div className="flex items-center gap-3">
@@ -163,8 +163,8 @@ const MyTripsPage = () => {
                                  <span className="font-bold">{tab.label}</span>
                               </div>
                               <span className={`px-2 py-0.5 rounded-lg text-xs font-bold ${activeTab === tab.id
-                                    ? 'bg-white/20 text-white'
-                                    : 'bg-slate-100 dark:bg-zinc-800 text-slate-500'
+                                 ? 'bg-white/20 text-white'
+                                 : 'bg-slate-100 dark:bg-zinc-800 text-slate-500'
                                  }`}>
                                  {tab.count}
                               </span>
@@ -179,7 +179,7 @@ const MyTripsPage = () => {
                   {activeTab === 'ongoing' && (
                      <div className="animate-fade-in">
                         <div className="flex items-center gap-3 mb-6">
-                           <h2 className="text-2xl font-bold dark:text-white">Ongoing Trips</h2>
+                           <h2 className="text-2xl font-bold dark:text-white">Các Chuyến Đi Đang Diễn Ra</h2>
                         </div>
                         {ongoing.length > 0 ? (
                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -193,7 +193,7 @@ const MyTripsPage = () => {
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
                                     <div className="absolute top-6 right-6">
-                                       <span className="px-4 py-2 bg-white/20 backdrop-blur-md text-white border border-white/30 rounded-full text-xs font-bold tracking-widest uppercase">Ongoing</span>
+                                       <span className="px-4 py-2 bg-white/20 backdrop-blur-md text-white border border-white/30 rounded-full text-xs font-bold tracking-widest uppercase">Đang Diễn Ra</span>
                                     </div>
                                     <div className="absolute bottom-0 left-0 right-0 p-8">
                                        <h3 className="text-2xl font-bold text-white mb-2">{trip.title}</h3>
@@ -212,7 +212,7 @@ const MyTripsPage = () => {
                         ) : (
                            <div className="text-center py-20 bg-slate-50 dark:bg-zinc-900/50 rounded-3xl border border-dashed border-slate-200 dark:border-zinc-800">
                               <span className="material-icons-round text-4xl text-slate-300 mb-4">rocket_launch</span>
-                              <p className="text-slate-500">No ongoing trips at the moment.</p>
+                              <p className="text-slate-500">Hiện tại không có chuyến đi nào đang diễn ra.</p>
                            </div>
                         )}
                      </div>
@@ -221,7 +221,7 @@ const MyTripsPage = () => {
                   {activeTab === 'upcoming' && (
                      <div className="animate-fade-in">
                         <div className="flex items-center gap-3 mb-6">
-                           <h2 className="text-2xl font-bold dark:text-white">Upcoming Adventures</h2>
+                           <h2 className="text-2xl font-bold dark:text-white">Các Cuộc Thám Hiểm Sắp Tới</h2>
                         </div>
                         {upcoming.length > 0 ? (
                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -236,17 +236,17 @@ const MyTripsPage = () => {
                                        />
                                        {trip.userRole === 'ORGANIZER' && (
                                           <div className="absolute top-4 left-4">
-                                             <span className="bg-primary text-white px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider shadow-lg">Organizer</span>
+                                             <span className="bg-primary text-white px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider shadow-lg">Người Tổ Chức</span>
                                           </div>
                                        )}
                                        <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-md px-3 py-1 rounded-lg text-xs font-bold text-slate-800 flex items-center gap-1">
                                           <span className="material-icons-round text-[14px] text-primary">calendar_today</span>
-                                          {new Date(trip.startDate).toLocaleDateString()}
+                                          {new Date(trip.startDate).toLocaleDateString('vi-VN')}
                                        </div>
                                     </div>
                                     <div className="p-6">
                                        <h3 className="text-xl font-bold dark:text-white mb-2 group-hover:text-primary transition-colors line-clamp-1">{trip.title}</h3>
-                                       <p className="text-slate-500 dark:text-slate-400 text-sm line-clamp-2 mb-4">{trip.description || 'No description provided.'}</p>
+                                       <p className="text-slate-500 dark:text-slate-400 text-sm line-clamp-2 mb-4">{trip.description || 'Không có mô tả được cung cấp.'}</p>
                                        <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-zinc-800">
                                           <div className="flex -space-x-2">
                                              {trip.members?.slice(0, 3).map((m, i) => (
@@ -259,7 +259,7 @@ const MyTripsPage = () => {
                                              )}
                                           </div>
                                           <span className="text-primary font-bold text-sm flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                                             View Details <span className="material-icons-round text-sm">arrow_forward</span>
+                                             Xem Chi Tiết <span className="material-icons-round text-sm">arrow_forward</span>
                                           </span>
                                        </div>
                                     </div>
@@ -274,15 +274,15 @@ const MyTripsPage = () => {
                                  <div className="w-14 h-14 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center mb-4 group-hover:bg-primary transition-colors text-slate-400 group-hover:text-white">
                                     <span className="material-icons-round text-2xl">add</span>
                                  </div>
-                                 <h3 className="text-lg font-bold dark:text-white mb-1">Plan New Trip</h3>
-                                 <p className="text-slate-400 text-sm">Start a new adventure</p>
+                                 <h3 className="text-lg font-bold dark:text-white mb-1">Lên Kế Hoạch Chuyến Đi Mới</h3>
+                                 <p className="text-slate-400 text-sm">Bắt đầu một chuyến thám hiểm mới</p>
                               </div>
                            </div>
                         ) : (
                            <div className="text-center py-20 bg-slate-50 dark:bg-zinc-900/50 rounded-3xl border border-dashed border-slate-200 dark:border-zinc-800">
                               <span className="material-icons-round text-4xl text-slate-300 mb-4">calendar_today</span>
-                              <p className="text-slate-500 mb-4">No upcoming trips scheduled.</p>
-                              <Link to="/trips/create" className="text-primary font-bold hover:underline">Plan one now</Link>
+                              <p className="text-slate-500 mb-4">Không có chuyến đi nào sắp tới được lên lịch.</p>
+                              <Link to="/trips/create" className="text-primary font-bold hover:underline">Lên kế hoạch ngay bây giờ</Link>
                            </div>
                         )}
                      </div>
@@ -291,7 +291,7 @@ const MyTripsPage = () => {
                   {activeTab === 'completed' && (
                      <div className="animate-fade-in">
                         <div className="flex items-center gap-3 mb-6">
-                           <h2 className="text-2xl font-bold dark:text-white">Past Memories</h2>
+                           <h2 className="text-2xl font-bold dark:text-white">Kỷ Niệm Cũ</h2>
                         </div>
                         {completed.length > 0 ? (
                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -308,7 +308,7 @@ const MyTripsPage = () => {
                                        <div className="absolute bottom-3 left-3 flex gap-2">
                                           <span className="bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-[10px] font-bold text-slate-800 flex items-center gap-1">
                                              <span className="material-icons-round text-[12px] text-emerald-600">check_circle</span>
-                                             {new Date(trip.endDate).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}
+                                             {new Date(trip.endDate).toLocaleDateString('vi-VN', { month: 'short', year: 'numeric' })}
                                           </span>
                                        </div>
                                     </div>
@@ -319,7 +319,7 @@ const MyTripsPage = () => {
                                     </p>
                                     <div className="flex items-center justify-end">
                                        <span className="text-sm font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-                                          Reminisce <span className="material-icons-round text-sm">history</span>
+                                          Hồi Tưởng <span className="material-icons-round text-sm">history</span>
                                        </span>
                                     </div>
                                  </div>
@@ -328,7 +328,7 @@ const MyTripsPage = () => {
                         ) : (
                            <div className="text-center py-20 bg-slate-50 dark:bg-zinc-900/50 rounded-3xl border border-dashed border-slate-200 dark:border-zinc-800">
                               <span className="material-icons-round text-4xl text-slate-300 mb-4">history</span>
-                              <p className="text-slate-500">No completed trips yet.</p>
+                              <p className="text-slate-500">Chưa có chuyến đi nào đã kết thúc.</p>
                            </div>
                         )}
                      </div>

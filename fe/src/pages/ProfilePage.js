@@ -38,7 +38,7 @@ const ProfilePage = () => {
             avatarUrl: profileData.avatarUrl || ''
          });
       } catch (err) {
-         setError(err.message || 'Failed to load profile');
+         setError(err.message || 'Không thể tải hồ sơ');
       } finally {
          setLoading(false);
       }
@@ -75,7 +75,7 @@ const ProfilePage = () => {
          // Scroll to top to see success message or just alert
          window.scrollTo({ top: 0, behavior: 'smooth' });
       } catch (err) {
-         setError(err.message || 'Failed to update profile');
+         setError(err.message || 'Cập nhật hồ sơ thất bại');
       } finally {
          setSaving(false);
       }
@@ -85,7 +85,7 @@ const ProfilePage = () => {
       return (
          <Layout>
             <div className="flex items-center justify-center min-h-screen pt-20">
-               <div className="text-xl text-slate-500 animate-pulse">Loading profile...</div>
+               <div className="text-xl text-slate-500 animate-pulse">Đang tải hồ sơ...</div>
             </div>
          </Layout>
       );
@@ -126,11 +126,11 @@ const ProfilePage = () => {
                   {/* Name and Location (Centered below avatar) */}
                   <div className="text-center mt-4">
                      <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-1">
-                        {formData.displayName || 'Your Name'}
+                        {formData.displayName || 'Tên của bạn'}
                      </h1>
                      <p className="text-slate-500 dark:text-slate-400 flex items-center justify-center gap-1 text-sm font-medium">
                         <span className="material-icons-round text-base opacity-70">location_on</span>
-                        {formData.location || 'Location not set'}
+                        {formData.location || 'Chưa cập nhật địa điểm'}
                      </p>
                   </div>
                </div>
@@ -146,7 +146,7 @@ const ProfilePage = () => {
             {success && (
                <div className="mb-6 px-5 py-4 bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-2xl flex items-center gap-3 font-medium">
                   <span className="material-icons-round text-xl">check_circle</span>
-                  Profile updated successfully!
+                  Hồ sơ đã được cập nhật thành công!
                </div>
             )}
 
@@ -159,7 +159,7 @@ const ProfilePage = () => {
                      </div>
                      <div>
                         <span className="block text-xl md:text-2xl font-bold text-slate-800 dark:text-white leading-tight">{profile.stats.totalCreatedTrips || 0}</span>
-                        <span className="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest mt-0.5 block">Trips Created</span>
+                        <span className="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest mt-0.5 block">Chuyến đi đã tạo</span>
                      </div>
                   </div>
                   <div className="bg-white dark:bg-slate-900/50 p-5 md:p-6 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-4 transition-all hover:shadow-md">
@@ -168,7 +168,7 @@ const ProfilePage = () => {
                      </div>
                      <div>
                         <span className="block text-xl md:text-2xl font-bold text-emerald-600 leading-tight">{profile.stats.totalJoinedTrips || 0}</span>
-                        <span className="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest mt-0.5 block">Trips Joined</span>
+                        <span className="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest mt-0.5 block">Chuyến đi đã tham gia</span>
                      </div>
                   </div>
                </div>
@@ -179,11 +179,11 @@ const ProfilePage = () => {
                <section className="bg-white dark:bg-slate-900/40 p-6 md:p-8 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm">
                   <div className="flex items-center gap-3 mb-8">
                      <span className="material-icons-round text-slate-700 dark:text-slate-300">person</span>
-                     <h2 className="text-xl font-bold text-slate-800 dark:text-white tracking-tight">Personal Details</h2>
+                     <h2 className="text-xl font-bold text-slate-800 dark:text-white tracking-tight">Thông Tin Cá Nhân</h2>
                   </div>
                   <div className="grid md:grid-cols-2 gap-x-6 gap-y-6">
                      <div className="space-y-2">
-                        <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 px-1">Display Name</label>
+                        <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 px-1">Tên Hiển Thị</label>
                         <input
                            className="w-full bg-slate-50 dark:bg-slate-800/50 border border-transparent rounded-2xl px-5 py-3.5 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-slate-800 dark:text-white outline-none placeholder:text-slate-400"
                            type="text"
@@ -193,17 +193,17 @@ const ProfilePage = () => {
                         />
                      </div>
                      <div className="space-y-2">
-                        <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 px-1">Location</label>
+                        <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 px-1">Địa Điểm</label>
                         <input
                            className="w-full bg-slate-50 dark:bg-slate-800/50 border border-transparent rounded-2xl px-5 py-3.5 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-slate-800 dark:text-white outline-none placeholder:text-slate-400"
-                           placeholder="e.g., Hanoi, Da Nang, HCMC"
+                           placeholder="VD: Hà Nội, Đà Nẵng, TP.HCM"
                            type="text"
                            value={formData.location}
                            onChange={(e) => handleInputChange('location', e.target.value)}
                         />
                      </div>
                      <div className="md:col-span-2 space-y-2 mt-2">
-                        <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 px-1">Avatar URL</label>
+                        <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 px-1">Đường Dẫn Ảnh Đại Diện</label>
                         <input
                            id="avatar-input"
                            className="w-full bg-slate-50 dark:bg-slate-800/50 border border-transparent rounded-2xl px-5 py-3.5 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-slate-800 dark:text-white outline-none placeholder:text-slate-400 font-mono text-sm"
@@ -214,17 +214,17 @@ const ProfilePage = () => {
                         />
                      </div>
                      <div className="md:col-span-2 space-y-2 mt-2">
-                        <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 px-1">Experience Level</label>
+                        <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 px-1">Mức Độ Kinh Nghiệm</label>
                         <div className="relative">
                            <select
                               className="w-full appearance-none bg-slate-50 dark:bg-slate-800/50 border border-transparent rounded-2xl px-5 py-3.5 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-slate-800 dark:text-white outline-none cursor-pointer"
                               value={formData.experienceLevel}
                               onChange={(e) => handleInputChange('experienceLevel', e.target.value)}
                            >
-                              <option value="BEGINNER">Beginner (I stay on the paths)</option>
-                              <option value="INTERMEDIATE">Intermediate (I enjoy day hikes)</option>
-                              <option value="ADVANCED">Advanced (I do multi-day trekking)</option>
-                              <option value="EXPERT">Expert (I'm a mountain goat)</option>
+                              <option value="BEGINNER">Người Mới (Tôi chỉ đi trên đường mòn)</option>
+                              <option value="INTERMEDIATE">Trung Cấp (Tôi thích đi bộ trong ngày)</option>
+                              <option value="ADVANCED">Cao Cấp (Tôi đi trekking nhiều ngày)</option>
+                              <option value="EXPERT">Chuyên Gia (Tôi leo núi như sơn dương)</option>
                            </select>
                            <span className="material-icons-round absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">expand_more</span>
                         </div>
@@ -235,13 +235,13 @@ const ProfilePage = () => {
                <section className="bg-white dark:bg-slate-900/40 p-6 md:p-8 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm">
                   <div className="flex items-center gap-3 mb-6">
                      <span className="material-icons-round text-slate-700 dark:text-slate-300">auto_awesome</span>
-                     <h2 className="text-xl font-bold text-slate-800 dark:text-white tracking-tight">About Me</h2>
+                     <h2 className="text-xl font-bold text-slate-800 dark:text-white tracking-tight">Về Tôi</h2>
                   </div>
                   <div className="space-y-2">
-                     <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 px-1">Bio</label>
+                     <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 px-1">Tiểu sử</label>
                      <textarea
                         className="w-full bg-slate-50 dark:bg-slate-800/50 border border-transparent rounded-2xl px-5 py-4 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-slate-800 dark:text-white outline-none resize-none placeholder:text-slate-400 leading-relaxed"
-                        placeholder="Tell others about your trekking style and interests..."
+                        placeholder="Hãy chia sẻ với người khác về phong cách và sở thích trekking của bạn..."
                         rows={4}
                         value={formData.bio}
                         onChange={(e) => handleInputChange('bio', e.target.value)}
@@ -252,15 +252,15 @@ const ProfilePage = () => {
                <section className="bg-slate-50/80 dark:bg-slate-900/20 p-6 md:p-8 rounded-3xl border border-dashed border-slate-200 dark:border-slate-800">
                   <div className="flex items-center gap-2 mb-6 opacity-80">
                      <span className="material-icons-round text-[18px]">lock_outline</span>
-                     <h2 className="text-xs font-bold uppercase tracking-widest text-slate-800 dark:text-white">Account Information (Read-only)</h2>
+                     <h2 className="text-xs font-bold uppercase tracking-widest text-slate-800 dark:text-white">Thông Tin Tài Khoản (Chỉ xem)</h2>
                   </div>
                   <div className="grid sm:grid-cols-2 gap-6">
                      <div>
-                        <span className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Email Address</span>
+                        <span className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Địa Chỉ Email</span>
                         <p className="text-slate-700 dark:text-slate-300 font-medium">{profile?.email}</p>
                      </div>
                      <div>
-                        <span className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Account Role</span>
+                        <span className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Vai Trò Tài Khoản</span>
                         <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-100/50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-full text-xs font-bold tracking-wide">
                            <span className="material-icons-round text-sm">verified</span>
                            {profile?.role || 'USER'}
@@ -276,7 +276,7 @@ const ProfilePage = () => {
                      className="w-full sm:w-auto px-10 py-4 bg-emerald-900 hover:bg-emerald-800 text-white font-bold rounded-2xl shadow-lg shadow-emerald-900/20 transition-all transform hover:-translate-y-0.5 active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none"
                   >
                      <span className="material-icons-round text-[20px]">save</span>
-                     {saving ? 'Saving...' : 'Save Profile Changes'}
+                     {saving ? 'Đang lưu...' : 'Lưu Thay Đổi Hồ Sơ'}
                   </button>
                </div>
             </form>
