@@ -4,7 +4,7 @@ import { tripsAPI, reviewAPI } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { useNotifications } from '../contexts/NotificationContext';
 import Layout from '../components/Layout';
-import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
+import LeafletMap from '../components/LeafletMap';
 
 const TripDetailPage = () => {
    const { id } = useParams();
@@ -28,17 +28,6 @@ const TripDetailPage = () => {
    // Join request state
    const [joinMessage, setJoinMessage] = useState('');
    const [showJoinForm, setShowJoinForm] = useState(false);
-
-   const { isLoaded } = useJsApiLoader({
-      id: 'google-map-script',
-      googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY
-   });
-
-   const mapContainerStyle = {
-      width: '100%',
-      height: '350px',
-      borderRadius: '1rem'
-   };
 
 
    const loadTripDetails = useCallback(async () => {
@@ -500,35 +489,13 @@ const TripDetailPage = () => {
                            </div>
 
                            {/* Map Container */}
-                           <div className="rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 min-h-[350px]">
-                              {isLoaded ? (
-                                 <GoogleMap
-                                    mapContainerStyle={mapContainerStyle}
-                                    center={trip.meetingPointCoords?.lat ? trip.meetingPointCoords : (trip.locationCoords?.lat ? trip.locationCoords : { lat: 10.762622, lng: 106.660172 })}
-                                    zoom={14}
-                                 >
-                                    {trip.locationCoords?.lat && (
-                                       <Marker
-                                          position={trip.locationCoords}
-                                          label="Đích Đến"
-                                       />
-                                    )}
-                                    {trip.meetingPointCoords?.lat && (
-                                       <Marker
-                                          position={trip.meetingPointCoords}
-                                          label="Điểm Hẹn"
-                                          icon={{
-                                             url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
-                                          }}
-                                       />
-                                    )}
-                                 </GoogleMap>
-                              ) : (
-                                 <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 animate-pulse">
-                                    <span className="material-icons-round text-4xl mb-2">map</span>
-                                    <p className="font-bold">Đang tải Bản đồ...</p>
-                                 </div>
-                              )}
+                           <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700">
+                              <LeafletMap
+                                 center={trip.meetingPointCoords?.lat ? trip.meetingPointCoords : (trip.locationCoords?.lat ? trip.locationCoords : { lat: 10.762622, lng: 106.660172 })}
+                                 markerPos={trip.locationCoords?.lat ? trip.locationCoords : null}
+                                 height="350px"
+                                 readOnly={true}
+                              />
                            </div>
                         </div>
                      </section>

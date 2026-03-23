@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { tripsAPI } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import Layout from '../components/Layout';
-import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
+import LeafletMap from '../components/LeafletMap';
 
 const EditTripPage = () => {
    const { id } = useParams();
@@ -29,18 +29,6 @@ const EditTripPage = () => {
       locationCoords: null,
       meetingPointCoords: null
    });
-
-   const { isLoaded } = useJsApiLoader({
-      id: 'google-map-script',
-      googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY
-   });
-
-   const mapContainerStyle = {
-      width: '100%',
-      height: '300px',
-      borderRadius: '0.75rem',
-      marginTop: '1rem'
-   };
 
    const defaultCenter = { lat: 10.762622, lng: 106.660172 }; // HCM City
 
@@ -240,19 +228,15 @@ const EditTripPage = () => {
                                     required
                                  />
                               </div>
-                              {isLoaded && (
-                                 <div className="mt-4">
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 px-1">Hoặc chọn trên bản đồ</p>
-                                    <GoogleMap
-                                       mapContainerStyle={mapContainerStyle}
-                                       center={formData.locationCoords || defaultCenter}
-                                       zoom={10}
-                                       onClick={(e) => setFormData(prev => ({ ...prev, locationCoords: { lat: e.latLng.lat(), lng: e.latLng.lng() } }))}
-                                    >
-                                       {formData.locationCoords && <Marker position={formData.locationCoords} />}
-                                    </GoogleMap>
-                                 </div>
-                              )}
+                              {/* Location Map */}
+                              <div className="mt-4">
+                                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 px-1">Hoặc chọn trên bản đồ</p>
+                                 <LeafletMap
+                                    center={formData.locationCoords || defaultCenter}
+                                    markerPos={formData.locationCoords}
+                                    onMapClick={(lat, lng) => setFormData(prev => ({ ...prev, locationCoords: { lat, lng } }))}
+                                 />
+                              </div>
                            </div>
 
                            {/* Difficulty */}
@@ -356,24 +340,15 @@ const EditTripPage = () => {
                                     type="text"
                                  />
                               </div>
-                              {isLoaded && (
-                                 <div className="mt-4">
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 px-1">Hoặc chọn trên bản đồ</p>
-                                    <GoogleMap
-                                       mapContainerStyle={mapContainerStyle}
-                                       center={formData.meetingPointCoords || formData.locationCoords || defaultCenter}
-                                       zoom={13}
-                                       onClick={(e) => setFormData(prev => ({ ...prev, meetingPointCoords: { lat: e.latLng.lat(), lng: e.latLng.lng() } }))}
-                                    >
-                                       {formData.meetingPointCoords && (
-                                          <Marker
-                                             position={formData.meetingPointCoords}
-                                             icon={{ url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png" }}
-                                          />
-                                       )}
-                                    </GoogleMap>
-                                 </div>
-                              )}
+                              {/* Meeting Point Map */}
+                               <div className="mt-4">
+                                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 px-1">Hoặc chọn trên bản đồ</p>
+                                  <LeafletMap
+                                     center={formData.meetingPointCoords || formData.locationCoords || defaultCenter}
+                                     markerPos={formData.meetingPointCoords}
+                                     onMapClick={(lat, lng) => setFormData(prev => ({ ...prev, meetingPointCoords: { lat, lng } }))}
+                                  />
+                               </div>
                            </div>
 
                            {/* Requirements */}
